@@ -3,579 +3,286 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>翔董｜CryptoSniper SMC狙擊儀表板</title>
+<title>翔董｜CryptoSniper 精準狙擊系統</title>
 <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#0a0a0c;--panel:#121216;--panel2:#17171d;--line:#26262e;--gold:#e8b44a;--pink:#ff5fa2;--green:#27d98b;--red:#ff4d6d;--text:#f2f0ec;--dim:#9a97a3}
+:root{--bg:#06061a;--bg2:#0b0b22;--card:#0e0e26;--card2:#12122e;--border:#1c1c3e;--border2:#28285a;--gold:#e8b44a;--pink:#ff4d9d;--cyan:#00d4ff;--green:#00e599;--red:#ff3d5f;--text:#ece9f5;--dim:#8a87a8;--dim2:#5c5a78}
 *{margin:0;padding:0;box-sizing:border-box}
-body{background:var(--bg);color:var(--text);font-family:'Noto Sans TC',sans-serif;min-height:100vh;background-image:radial-gradient(ellipse 80% 40% at 50% -10%,rgba(232,180,74,.08),transparent),radial-gradient(ellipse 60% 30% at 80% 110%,rgba(255,95,162,.06),transparent)}
+body{background:var(--bg);color:var(--text);font-family:'Noto Sans TC',sans-serif;min-height:100vh;background-image:linear-gradient(rgba(0,212,255,.015) 1px,transparent 1px),linear-gradient(90deg,rgba(232,180,74,.015) 1px,transparent 1px);background-size:50px 50px}
 .num{font-family:'Rajdhani',sans-serif;font-weight:700}
-.wrap{max-width:1100px;margin:0 auto;padding:14px}
-header{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 4px 16px;flex-wrap:wrap}
-.brand{display:flex;align-items:center;gap:10px}
-.brand .logo{width:42px;height:42px;border-radius:50%;border:2px solid var(--gold);display:flex;align-items:center;justify-content:center;font-size:20px;background:radial-gradient(circle,rgba(255,95,162,.15),transparent 70%)}
-.brand h1{font-size:17px;font-weight:900}.brand h1 span{color:var(--gold)}
-.brand small{display:block;color:var(--pink);font-size:10px;letter-spacing:2px;font-weight:600}
-.controls{display:flex;gap:8px;flex-wrap:wrap}
-select,button.btn{background:var(--panel2);color:var(--text);border:1px solid var(--line);border-radius:10px;padding:8px 13px;font-size:13px;font-family:'Noto Sans TC',sans-serif;cursor:pointer;font-weight:500}
-button.btn.gold{background:linear-gradient(135deg,#caa23f,#e8b44a);color:#1a1304;border:none;font-weight:700}
-button.btn.pink{background:linear-gradient(135deg,#e04a8a,#ff5fa2);color:#fff;border:none;font-weight:700}
-button.btn:disabled{opacity:.5;cursor:wait}
-.ticker{display:flex;align-items:baseline;gap:12px;padding:6px 4px 16px;flex-wrap:wrap}
-.ticker .price{font-size:42px;line-height:1}
-.ticker .chg{font-size:16px;padding:3px 10px;border-radius:8px}
+.wrap{max-width:1100px;margin:0 auto;padding:10px 12px}
 .up{color:var(--green)}.down{color:var(--red)}
-.chg.up{background:rgba(39,217,139,.12)}.chg.down{background:rgba(255,77,109,.12)}
-.ticker .meta{color:var(--dim);font-size:12px}
-.grid{display:grid;grid-template-columns:1.3fr .7fr;gap:12px}
-@media(max-width:800px){.grid{grid-template-columns:1fr}.ticker .price{font-size:34px}}
-.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px}
-.card h2{font-size:11px;letter-spacing:3px;color:var(--dim);font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:8px}
-.card h2::before{content:'';width:12px;height:2px;background:var(--pink)}
-.snipe{border-color:rgba(232,180,74,.4);position:relative;overflow:hidden}
-.snipe::before{content:'';position:absolute;right:-50px;top:-50px;width:200px;height:200px;border:1px solid rgba(232,180,74,.2);border-radius:50%;background:linear-gradient(rgba(232,180,74,.15),rgba(232,180,74,.15)) center/1px 100% no-repeat,linear-gradient(rgba(232,180,74,.15),rgba(232,180,74,.15)) center/100% 1px no-repeat;pointer-events:none}
-.bias{display:flex;align-items:center;gap:10px;margin-bottom:14px}
-.bias .tag{font-size:22px;font-weight:900;padding:6px 16px;border-radius:12px}
-.tag.long{background:rgba(39,217,139,.14);color:var(--green);border:1px solid rgba(39,217,139,.4)}
-.tag.short{background:rgba(255,77,109,.14);color:var(--red);border:1px solid rgba(255,77,109,.4)}
-.tag.wait{background:rgba(154,151,163,.1);color:var(--dim);border:1px solid var(--line)}
-.bias .why{color:var(--dim);font-size:12px;line-height:1.7}
-.levels{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:12px}
-@media(min-width:500px){.levels{grid-template-columns:repeat(4,1fr)}}
-.lv{background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:10px}
-.lv .label{font-size:11px;color:var(--dim);margin-bottom:3px}
-.lv .val{font-size:18px}
-.lv.entry{border-color:rgba(232,180,74,.5)}.lv.entry .val{color:var(--gold)}
-.lv.sl .val{color:var(--red)}
-.lv.tp .val{color:var(--green)}
-.lv .sub{font-size:10px;color:var(--dim);margin-top:2px}
-/* SMC Tags */
-.smc-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
-.smc-tag{padding:3px 10px;border-radius:99px;font-size:11px;font-weight:700}
-.smc-tag.bos-long{background:rgba(39,217,139,.15);color:var(--green);border:1px solid rgba(39,217,139,.3)}
-.smc-tag.bos-short{background:rgba(255,77,109,.15);color:var(--red);border:1px solid rgba(255,77,109,.3)}
-.smc-tag.fvg-bull{background:rgba(39,217,139,.1);color:var(--green);border:1px solid rgba(39,217,139,.25)}
-.smc-tag.fvg-bear{background:rgba(255,77,109,.1);color:var(--red);border:1px solid rgba(255,77,109,.25)}
-.smc-tag.ob-bull{background:rgba(232,180,74,.12);color:var(--gold);border:1px solid rgba(232,180,74,.3)}
-.smc-tag.ob-bear{background:rgba(255,95,162,.12);color:var(--pink);border:1px solid rgba(255,95,162,.3)}
-.smc-tag.none{background:rgba(154,151,163,.1);color:var(--dim);border:1px solid var(--line)}
-/* Lights */
-.lights{display:flex;flex-direction:column;gap:8px}
-.light{display:flex;align-items:center;gap:10px;background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
-.light .dot{font-size:18px;min-width:22px}
-.light .t{font-weight:700;font-size:13px}
-.light .d{color:var(--dim);font-size:11px;margin-top:1px}
-/* Inds */
-.inds{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}
-.ind{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:9px 10px}
-.ind .label{font-size:10px;color:var(--dim)}
-.ind .val{font-size:17px}
-/* Table */
+header{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 0 12px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:10px}
+.logo{width:44px;height:44px;border-radius:12px;border:2px solid var(--gold);display:flex;align-items:center;justify-content:center;font-size:22px;background:linear-gradient(135deg,rgba(232,180,74,.18),rgba(255,77,157,.1))}
+.brand h1{font-size:18px;font-weight:900}.brand h1 span{color:var(--gold)}
+.brand small{display:block;color:var(--cyan);font-size:9px;letter-spacing:3px;font-weight:700;margin-top:1px}
+.ctrls{display:flex;gap:6px;flex-wrap:wrap}
+select,.btn{background:var(--card2);color:var(--text);border:1px solid var(--border2);border-radius:8px;padding:7px 11px;font-size:13px;font-family:'Noto Sans TC',sans-serif;cursor:pointer;font-weight:500}
+.btn-gold{background:linear-gradient(135deg,#c08830,#e8b44a);color:#160e00;border:none;font-weight:700}
+.btn:disabled{opacity:.5;cursor:wait}
+.ticker{display:flex;align-items:baseline;gap:10px;padding:4px 0 8px;flex-wrap:wrap}
+.price{font-size:38px;line-height:1}
+.chg{font-size:14px;padding:3px 9px;border-radius:7px}
+.chg.up{background:rgba(0,229,153,.1)}.chg.down{background:rgba(255,61,95,.1)}
+.meta{color:var(--dim);font-size:11px;display:flex;align-items:center;gap:5px}
+.dot-live{width:6px;height:6px;border-radius:50%;background:var(--green);display:inline-block;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.2}}
+.err{color:var(--red);font-size:12px;padding:4px;display:none}
+.stats{display:flex;gap:7px;overflow-x:auto;padding-bottom:8px;scrollbar-width:none}
+.stats::-webkit-scrollbar{display:none}
+.pill{background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:7px 12px;min-width:max-content}
+.pill .pl{font-size:10px;color:var(--dim);letter-spacing:1px;font-weight:600;margin-bottom:2px}
+.pill .pv{font-size:15px;font-family:'Rajdhani',sans-serif;font-weight:700}
+.pill.pos{border-color:rgba(255,61,95,.3)}.pill.pos .pv{color:var(--red)}
+.pill.neg{border-color:rgba(0,229,153,.3)}.pill.neg .pv{color:var(--green)}
+.pill.cyn .pv{color:var(--cyan)}
+.grid{display:grid;grid-template-columns:1.45fr .55fr;gap:10px;margin:8px 0}
+@media(max-width:700px){.grid{grid-template-columns:1fr}.price{font-size:32px}}
+.card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px}
+.ct{font-size:10px;letter-spacing:3px;color:var(--dim);font-weight:700;margin-bottom:11px;display:flex;align-items:center;gap:8px}
+.ct::before{content:'';width:16px;height:2px;border-radius:2px;background:linear-gradient(90deg,var(--cyan),var(--pink))}
+.snipe{border-color:rgba(232,180,74,.3);background:linear-gradient(140deg,rgba(232,180,74,.05),var(--card) 55%)}
+.tags{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px}
+.t{padding:3px 9px;border-radius:99px;font-size:11px;font-weight:700;border:1px solid transparent}
+.t.bl{background:rgba(0,229,153,.1);color:var(--green);border-color:rgba(0,229,153,.25)}
+.t.bs{background:rgba(255,61,95,.1);color:var(--red);border-color:rgba(255,61,95,.25)}
+.t.fb{background:rgba(0,229,153,.07);color:var(--green);border-color:rgba(0,229,153,.18)}
+.t.fs{background:rgba(255,61,95,.07);color:var(--red);border-color:rgba(255,61,95,.18)}
+.t.ob{background:rgba(232,180,74,.09);color:var(--gold);border-color:rgba(232,180,74,.22)}
+.t.os{background:rgba(255,77,157,.09);color:var(--pink);border-color:rgba(255,77,157,.22)}
+.t.n{background:rgba(138,135,168,.07);color:var(--dim);border-color:var(--border)}
+.bias{display:flex;align-items:center;gap:9px;margin-bottom:11px}
+.btag{font-size:19px;font-weight:900;padding:6px 15px;border-radius:9px;letter-spacing:.5px}
+.btag.long{background:rgba(0,229,153,.1);color:var(--green);border:1px solid rgba(0,229,153,.3)}
+.btag.short{background:rgba(255,61,95,.1);color:var(--red);border:1px solid rgba(255,61,95,.3)}
+.btag.wait{background:rgba(138,135,168,.07);color:var(--dim);border:1px solid var(--border)}
+.bwhy{color:var(--dim);font-size:12px;line-height:1.6}
+.zone{background:var(--card2);border:1px solid var(--border);border-radius:9px;padding:9px 11px;margin-bottom:9px;font-size:12px}
+.zone .zt{font-size:10px;color:var(--dim);letter-spacing:1px;font-weight:700;margin-bottom:6px}
+.zr{display:flex;justify-content:space-between;align-items:center;margin-bottom:3px}
+.zr:last-child{margin-bottom:0}
+.zl{color:var(--dim)}.zv{font-family:'Rajdhani',sans-serif;font-weight:700}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:7px}
+.tps{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin-bottom:9px}
+.lv{background:var(--card2);border:1px solid var(--border);border-radius:9px;padding:8px 10px}
+.lv .ll{font-size:10px;color:var(--dim);margin-bottom:2px}
+.lv .lv2{font-size:16px}
+.lv .ls{font-size:10px;color:var(--dim2);margin-top:2px}
+.lv.entry{border-color:rgba(232,180,74,.35)}.lv.entry .lv2{color:var(--gold)}
+.lv.sl .lv2{color:var(--red)}
+.lv.tp .lv2{color:var(--green)}
+.lv.tp5{border-color:rgba(0,212,255,.25)}.lv.tp5 .lv2{color:var(--cyan)}
+.track-row{display:flex;gap:7px;margin-bottom:9px}
+.tbtn{flex:1;padding:10px;border-radius:9px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Noto Sans TC',sans-serif;border:none;transition:.3s}
+.tbtn.on{background:linear-gradient(135deg,#008c5a,#00e599);color:#001a0f}
+.tbtn.off{background:var(--card2);color:var(--dim);border:1px solid var(--border)}
+.aibtn{width:100%;padding:11px;border-radius:10px;background:linear-gradient(135deg,#cc2d7d,#ff4d9d);color:#fff;font-size:14px;font-weight:700;font-family:'Noto Sans TC',sans-serif;cursor:pointer;border:none;margin-bottom:7px}
+.aiout{background:var(--card2);border:1px solid rgba(255,77,157,.2);border-radius:9px;padding:12px;font-size:12px;line-height:1.9;white-space:pre-wrap;display:none;margin-top:6px}
+.aiout.show{display:block}
+.kbox{font-size:12px;color:var(--dim);margin-top:5px}
+.kbox summary{cursor:pointer;padding:3px}
+.kbox input{width:100%;margin-top:5px;background:var(--card2);color:var(--text);border:1px solid var(--border);border-radius:7px;padding:6px 10px;font-size:12px}
+.lights{display:flex;flex-direction:column;gap:6px}
+.light{display:flex;align-items:center;gap:9px;background:var(--card2);border:1px solid var(--border);border-radius:9px;padding:8px 10px}
+.ldot{font-size:15px;min-width:18px}
+.lt{font-weight:700;font-size:13px}
+.ld{color:var(--dim);font-size:11px;margin-top:1px}
+.inds{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:8px}
+.ind{background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:7px 9px}
+.il{font-size:10px;color:var(--dim)}
+.iv{font-size:16px}
+.klevels{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-bottom:9px}
+@media(max-width:480px){.klevels{grid-template-columns:repeat(2,1fr)}}
+.kl{background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:7px 9px}
+.kll{font-size:10px;color:var(--dim);font-weight:700;margin-bottom:2px}
+.klv{font-size:14px}
 table{width:100%;border-collapse:collapse}
-th,td{padding:9px 7px;text-align:left;font-size:13px;border-bottom:1px solid var(--line)}
-th{color:var(--dim);font-size:11px;letter-spacing:1px;font-weight:500}
-td .pill{padding:2px 10px;border-radius:99px;font-size:12px;font-weight:700}
-.pill.long{background:rgba(39,217,139,.14);color:var(--green)}
-.pill.short{background:rgba(255,77,109,.14);color:var(--red)}
-.pill.wait{background:rgba(154,151,163,.1);color:var(--dim)}
-/* AI */
-.ai-out{background:var(--panel2);border:1px solid rgba(255,95,162,.3);border-radius:12px;padding:14px;font-size:13px;line-height:1.9;white-space:pre-wrap;display:none;margin-top:10px}
-.keybox{margin-top:8px;font-size:12px;color:var(--dim)}
-.keybox summary{cursor:pointer;padding:4px 2px}
-.keybox input{width:100%;margin-top:6px;background:var(--panel2);color:var(--text);border:1px solid var(--line);border-radius:10px;padding:8px 12px;font-size:12px}
-.keybox .hint{margin-top:5px;font-size:11px}
-.ai-out.show{display:block}
-.loading{color:var(--pink)}
-footer{color:var(--dim);font-size:11px;text-align:center;padding:20px 12px;line-height:1.8}
-.err{color:var(--red);font-size:12px;padding:6px 4px;display:none}
-@media(prefers-reduced-motion:no-preference){.blink{animation:bl 1.6s ease-in-out infinite}@keyframes bl{50%{opacity:.4}}}
-/* SMC zone bar */
-.zone-bar{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin-bottom:10px;font-size:12px}
-.zone-title{color:var(--dim);font-size:10px;letter-spacing:1px;margin-bottom:6px;font-weight:700}
-.zone-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
-.zone-row:last-child{margin-bottom:0}
-.zone-label{color:var(--dim)}
-.zone-val{font-family:'Rajdhani',sans-serif;font-weight:700}
+th,td{padding:7px 6px;text-align:left;font-size:13px;border-bottom:1px solid var(--border)}
+th{color:var(--dim);font-size:10px;letter-spacing:1px;font-weight:500}
+.toast{position:fixed;top:16px;left:12px;right:12px;max-width:420px;margin:0 auto;background:var(--card2);border:1px solid rgba(0,212,255,.3);border-radius:11px;padding:11px 15px;z-index:9999;transform:translateY(-80px);opacity:0;transition:.4s;font-size:13px;text-align:center}
+.toast.show{transform:translateY(0);opacity:1}
+.tstat{background:rgba(0,212,255,.05);border:1px solid rgba(0,212,255,.2);border-radius:10px;padding:9px 11px;font-size:12px;margin-bottom:8px;display:none}
+.tstat.show{display:block}
+.tst{color:var(--cyan);font-weight:700;margin-bottom:5px}
+.tsr{display:flex;justify-content:space-between;margin-bottom:3px;color:var(--dim)}
+.tsr span:last-child{color:var(--text);font-family:'Rajdhani',sans-serif;font-weight:600}
+footer{color:var(--dim);font-size:11px;text-align:center;padding:14px 4px;line-height:1.8}
+@media(prefers-reduced-motion:no-preference){.blink{animation:bl 1.8s infinite}@keyframes bl{50%{opacity:.3}}}
 </style>
 </head>
 <body>
+<div class="toast" id="toast"></div>
 <div class="wrap">
 <header>
-  <div class="brand">
-    <div class="logo">🐆</div>
-    <div><h1>翔董<span>｜CryptoSniper</span></h1><small>SMC · ICT · PO3 狙擊系統</small></div>
-  </div>
-  <div class="controls">
-    <select id="symbol">
-      <option value="BTCUSDT">BTC/USDT</option>
-      <option value="ETHUSDT">ETH/USDT</option>
-      <option value="SOLUSDT">SOL/USDT</option>
-      <option value="XRPUSDT">XRP/USDT</option>
-      <option value="BNBUSDT">BNB/USDT</option>
-      <option value="DOGEUSDT">DOGE/USDT</option>
-    </select>
-    <select id="tf">
-      <option value="15m">15分</option>
-      <option value="5m">5分</option>
-      <option value="1h" selected>1小時</option>
-      <option value="4h">4小時</option>
-    </select>
-    <button class="btn gold" id="refresh">⟳ 更新</button>
-  </div>
+<div class="brand">
+  <div class="logo">🐆</div>
+  <div><h1>翔董<span>｜CryptoSniper</span></h1><small>SMC · ICT · PO3 · 精準狙擊系統</small></div>
+</div>
+<div class="ctrls">
+  <select id="sym">
+    <option value="BTCUSDT">BTC/USDT</option>
+    <option value="ETHUSDT">ETH/USDT</option>
+    <option value="SOLUSDT">SOL/USDT</option>
+    <option value="XRPUSDT">XRP/USDT</option>
+    <option value="BNBUSDT">BNB/USDT</option>
+    <option value="DOGEUSDT">DOGE/USDT</option>
+    <option value="ADAUSDT">ADA/USDT</option>
+    <option value="AVAXUSDT">AVAX/USDT</option>
+    <option value="LINKUSDT">LINK/USDT</option>
+    <option value="DOTUSDT">DOT/USDT</option>
+    <option value="MATICUSDT">MATIC/USDT</option>
+    <option value="APTUSDT">APT/USDT</option>
+    <option value="SUIUSDT">SUI/USDT</option>
+    <option value="OPUSDT">OP/USDT</option>
+    <option value="ARBUSDT">ARB/USDT</option>
+    <option value="NEARUSDT">NEAR/USDT</option>
+    <option value="1000PEPEUSDT">PEPE/USDT</option>
+    <option value="WIFUSDT">WIF/USDT</option>
+    <option value="TONUSDT">TON/USDT</option>
+    <option value="TRUMPUSDT">TRUMP/USDT</option>
+  </select>
+  <select id="tf">
+    <option value="1m">1分</option>
+    <option value="3m">3分</option>
+    <option value="5m">5分</option>
+    <option value="15m" selected>15分</option>
+    <option value="30m">30分</option>
+    <option value="1h">1小時</option>
+    <option value="2h">2小時</option>
+    <option value="4h">4小時</option>
+    <option value="6h">6小時</option>
+    <option value="12h">12小時</option>
+    <option value="1d">日線</option>
+    <option value="1w">週線</option>
+  </select>
+  <button class="btn btn-gold" id="refresh">⟳ 更新</button>
+</div>
 </header>
-
 <div class="ticker">
   <div class="price num" id="price">--</div>
   <div class="chg num" id="chg">--</div>
-  <div class="meta" id="updated">尚未載入</div>
+  <div class="meta"><span class="dot-live"></span><span id="upd">尚未載入</span></div>
 </div>
 <div class="err" id="err"></div>
-
+<div class="stats">
+  <div class="pill" id="pfund"><div class="pl">資金費率</div><div class="pv" id="vfund">--</div></div>
+  <div class="pill" id="poi"><div class="pl">未平倉量</div><div class="pv" id="voi">--</div></div>
+  <div class="pill" id="pls"><div class="pl">多空比(散戶)</div><div class="pv" id="vls">--</div></div>
+  <div class="pill" id="pfg"><div class="pl">恐懼貪婪</div><div class="pv" id="vfg">--</div></div>
+  <div class="pill cyn"><div class="pl">數據來源</div><div class="pv" id="vsrc" style="font-size:12px">載入中</div></div>
+</div>
+<div class="tstat" id="tstat"><div class="tst">🎯 訊號追蹤中</div><div id="tinfo"></div></div>
 <div class="grid">
-  <!-- 左：狙擊點位 -->
-  <div class="card snipe">
-    <h2>狙擊點位 SNIPE ZONE</h2>
-    <!-- SMC 結構標籤 -->
-    <div class="smc-row" id="smcTags"></div>
-    <!-- SMC 區間 -->
-    <div class="zone-bar" id="zoneBar" style="display:none">
-      <div class="zone-title">SMC 關鍵區間</div>
-      <div class="zone-row"><span class="zone-label">🔲 Order Block</span><span class="zone-val" id="zOB">--</span></div>
-      <div class="zone-row"><span class="zone-label">📊 FVG 區間</span><span class="zone-val" id="zFVG">--</span></div>
-      <div class="zone-row"><span class="zone-label">💧 流動性目標</span><span class="zone-val" id="zLiq">--</span></div>
-    </div>
-    <div class="bias">
-      <div class="tag wait" id="biasTag">⚪ 載入中</div>
-      <div class="why" id="biasWhy">正在計算 SMC 結構…</div>
-    </div>
-    <div class="levels">
-      <div class="lv entry"><div class="label">🎯 進場</div><div class="val num" id="lvEntry">--</div><div class="sub" id="lvEntrySub"></div></div>
-      <div class="lv sl"><div class="label">🛡 止損 SL</div><div class="val num" id="lvSL">--</div><div class="sub">OB 下/上方</div></div>
-      <div class="lv tp"><div class="label">💰 TP1</div><div class="val num" id="lvTP1">--</div><div class="sub">1 : 1</div></div>
-      <div class="lv tp"><div class="label">🚀 TP2</div><div class="val num" id="lvTP2">--</div><div class="sub">1 : 1.5</div></div>
-    </div>
-    <button class="btn pink" id="aiBtn" style="width:100%">🐆 AI 狙擊分析</button>
-    <details class="keybox">
-      <summary>進階：連接 Claude API（選填）</summary>
-      <input id="apiKey" type="password" placeholder="sk-ant-..." autocomplete="off">
-      <div class="hint">不填也能用本地解盤</div>
-    </details>
-    <div class="ai-out" id="aiOut"></div>
+<div class="card snipe">
+  <div class="ct">狙擊點位 SNIPE ZONE</div>
+  <div class="tags" id="tags"></div>
+  <div class="zone" id="zone" style="display:none">
+    <div class="zt">SMC 關鍵區間</div>
+    <div class="zr"><span class="zl">🔲 Order Block</span><span class="zv" id="zob">--</span></div>
+    <div class="zr"><span class="zl">📊 FVG 區間</span><span class="zv" id="zfvg">--</span></div>
+    <div class="zr"><span class="zl">💧 流動性目標</span><span class="zv" id="zliq">--</span></div>
   </div>
-
-  <!-- 右：紅綠燈 -->
-  <div class="card">
-    <h2>SMC 進場條件</h2>
-    <div class="lights">
-      <div class="light"><div class="dot" id="l1">⚪</div><div><div class="t">市場結構 BOS</div><div class="d" id="l1d">Break of Structure 方向</div></div></div>
-      <div class="light"><div class="dot" id="l2">⚪</div><div><div class="t">FVG 不平衡</div><div class="d" id="l2d">Fair Value Gap 確認</div></div></div>
-      <div class="light"><div class="dot" id="l3">⚪</div><div><div class="t">Order Block</div><div class="d" id="l3d">有效 OB 支撐/壓力</div></div></div>
-      <div class="light"><div class="dot" id="l4">⚪</div><div><div class="t">動能確認</div><div class="d" id="l4d">RSI + MACD 同向</div></div></div>
-    </div>
-    <h2 style="margin-top:14px">核心指標</h2>
-    <div class="inds">
-      <div class="ind"><div class="label">RSI</div><div class="val num" id="iRsi">--</div></div>
-      <div class="ind"><div class="label">ADX</div><div class="val num" id="iAdx">--</div></div>
-      <div class="ind"><div class="label">ATR</div><div class="val num" id="iAtr">--</div></div>
-      <div class="ind"><div class="label">EMA20</div><div class="val num" id="iE20">--</div></div>
-      <div class="ind"><div class="label">EMA50</div><div class="val num" id="iE50">--</div></div>
-      <div class="ind"><div class="label">EMA200</div><div class="val num" id="iE200">--</div></div>
-    </div>
+  <div class="bias">
+    <div class="btag wait" id="btag">⚪ 載入中</div>
+    <div class="bwhy" id="bwhy">計算中…</div>
+  </div>
+  <div class="row2">
+    <div class="lv entry"><div class="ll">🎯 進場</div><div class="lv2 num" id="lEntry">--</div><div class="ls" id="lESub">FVG/OB回踩</div></div>
+    <div class="lv sl"><div class="ll">🛡 止損 SL</div><div class="lv2 num" id="lSL">--</div><div class="ls" id="lSSub">OB邊緣外側</div></div>
+  </div>
+  <div class="tps">
+    <div class="lv tp"><div class="ll">TP1 1R</div><div class="lv2 num" id="lTP1">--</div></div>
+    <div class="lv tp"><div class="ll">TP2 1.5R</div><div class="lv2 num" id="lTP2">--</div></div>
+    <div class="lv tp"><div class="ll">TP3 2R</div><div class="lv2 num" id="lTP3">--</div></div>
+    <div class="lv tp"><div class="ll">TP4 2.5R</div><div class="lv2 num" id="lTP4">--</div></div>
+    <div class="lv tp5"><div class="ll">TP5 5R 🎯</div><div class="lv2 num" id="lTP5">--</div></div>
+  </div>
+  <div class="track-row"><button class="tbtn off" id="tbtn" onclick="toggleTrack()">📍 追蹤此訊號</button></div>
+  <button class="aibtn" id="aiBtn">🐆 AI 狙擊分析</button>
+  <details class="kbox">
+    <summary>進階：Claude API（選填，不填用本地解盤）</summary>
+    <input id="apiKey" type="password" placeholder="sk-ant-..." autocomplete="off">
+  </details>
+  <div class="aiout" id="aiOut"></div>
+</div>
+<div class="card">
+  <div class="ct">SMC 進場條件</div>
+  <div class="lights">
+    <div class="light"><div class="ldot" id="l1">⚪</div><div><div class="lt">市場結構 BOS</div><div class="ld" id="l1d">Break of Structure</div></div></div>
+    <div class="light"><div class="ldot" id="l2">⚪</div><div><div class="lt">FVG 不平衡</div><div class="ld" id="l2d">Fair Value Gap</div></div></div>
+    <div class="light"><div class="ldot" id="l3">⚪</div><div><div class="lt">Order Block</div><div class="ld" id="l3d">OB 支撐/壓力</div></div></div>
+    <div class="light"><div class="ldot" id="l4">⚪</div><div><div class="lt">動能確認</div><div class="ld" id="l4d">RSI + MACD</div></div></div>
+  </div>
+  <div class="ct" style="margin-top:11px">核心指標</div>
+  <div class="inds">
+    <div class="ind"><div class="il">RSI</div><div class="iv num" id="iRsi">--</div></div>
+    <div class="ind"><div class="il">ADX</div><div class="iv num" id="iAdx">--</div></div>
+    <div class="ind"><div class="il">ATR</div><div class="iv num" id="iAtr">--</div></div>
+    <div class="ind"><div class="il">EMA20</div><div class="iv num" id="iE20">--</div></div>
+    <div class="ind"><div class="il">EMA50</div><div class="iv num" id="iE50">--</div></div>
+    <div class="ind"><div class="il">EMA200</div><div class="iv num" id="iE200">--</div></div>
   </div>
 </div>
-
-<!-- 多週期 -->
-<div class="card" style="margin-top:12px">
-  <h2>多週期結構確認</h2>
+</div>
+<div class="card" style="margin-bottom:9px">
+  <div class="ct">日週 關鍵價位</div>
+  <div class="klevels">
+    <div class="kl"><div class="kll">前日高 PDH</div><div class="klv num" id="kPDH">--</div></div>
+    <div class="kl"><div class="kll">前日低 PDL</div><div class="klv num" id="kPDL">--</div></div>
+    <div class="kl"><div class="kll">前週高 PWH</div><div class="klv num" id="kPWH">--</div></div>
+    <div class="kl"><div class="kll">前週低 PWL</div><div class="klv num" id="kPWL">--</div></div>
+    <div class="kl"><div class="kll">前日開 PDO</div><div class="klv num" id="kPDO">--</div></div>
+    <div class="kl"><div class="kll">前日收 PDC</div><div class="klv num" id="kPDC">--</div></div>
+    <div class="kl"><div class="kll">前週開 PWO</div><div class="klv num" id="kPWO">--</div></div>
+    <div class="kl"><div class="kll">前週收 PWC</div><div class="klv num" id="kPWC">--</div></div>
+  </div>
+</div>
+<div class="card">
+  <div class="ct">多週期結構確認</div>
   <table>
-    <thead><tr><th>週期</th><th>BOS方向</th><th>FVG</th><th>RSI</th><th>vs EMA200</th></tr></thead>
+    <thead><tr><th>週期</th><th>BOS</th><th>FVG</th><th>RSI</th><th>vs EMA200</th></tr></thead>
     <tbody id="mtfBody"><tr><td colspan="5" style="color:var(--dim)">載入中…</td></tr></tbody>
   </table>
 </div>
-
-<footer>⚠️ 本工具融合 SMC/ICT 概念自動計算，僅供教學參考，不構成投資建議。合約交易具高風險，請做好資金控管。｜不懂來問翔董 🐆</footer>
+<footer>⚠️ 僅供教學參考，不構成投資建議。合約交易具高風險，請做好資金控管。<br>不懂來問翔董 🐆｜CryptoSniper</footer>
 </div>
-
 <script>
 const $=id=>document.getElementById(id);
-const TFS=[['15m','15分'],['1h','1小時'],['4h','4小時'],['1d','日線']];
-let state={symbol:'BTCUSDT',tf:'1h',data:null,mtf:{}};
-
-/* ====== 格式化 ====== */
-function fmt(n,forceDecimals){
-  if(n==null||isNaN(n))return'--';
-  if(forceDecimals)return n.toFixed(forceDecimals);
-  if(n>=10000)return n.toLocaleString('en-US',{maximumFractionDigits:1});
-  if(n>=100)return n.toFixed(2);
-  if(n>=1)return n.toFixed(3);
-  if(n>=0.1)return n.toFixed(4);
-  return n.toFixed(6);
-}
-
-/* ====== 基礎指標 ====== */
-function ema(vals,p){const k=2/(p+1);let e=vals.slice(0,p).reduce((a,b)=>a+b,0)/p;const out=new Array(vals.length).fill(null);out[p-1]=e;for(let i=p;i<vals.length;i++){e=vals[i]*k+e*(1-k);out[i]=e}return out}
-function rsi(closes,p=14){let g=0,l=0;for(let i=1;i<=p;i++){const d=closes[i]-closes[i-1];if(d>0)g+=d;else l-=d}let ag=g/p,al=l/p;for(let i=p+1;i<closes.length;i++){const d=closes[i]-closes[i-1];ag=(ag*(p-1)+(d>0?d:0))/p;al=(al*(p-1)+(d<0?-d:0))/p}if(al===0)return 100;return 100-100/(1+ag/al)}
-function atr(h,l,c,p=14){const trs=[];for(let i=1;i<c.length;i++)trs.push(Math.max(h[i]-l[i],Math.abs(h[i]-c[i-1]),Math.abs(l[i]-c[i-1])));let a=trs.slice(0,p).reduce((x,y)=>x+y,0)/p;for(let i=p;i<trs.length;i++)a=(a*(p-1)+trs[i])/p;return a}
-function adx(h,l,c,p=14){const len=c.length;if(len<p*2+2)return 0;const tr=[],pdm=[],ndm=[];for(let i=1;i<len;i++){const up=h[i]-h[i-1],dn=l[i-1]-l[i];pdm.push(up>dn&&up>0?up:0);ndm.push(dn>up&&dn>0?dn:0);tr.push(Math.max(h[i]-l[i],Math.abs(h[i]-c[i-1]),Math.abs(l[i]-c[i-1])))}let trW=tr.slice(0,p).reduce((a,b)=>a+b,0),pW=pdm.slice(0,p).reduce((a,b)=>a+b,0),nW=ndm.slice(0,p).reduce((a,b)=>a+b,0);const dxs=[];for(let i=p;i<tr.length;i++){trW=trW-trW/p+tr[i];pW=pW-pW/p+pdm[i];nW=nW-nW/p+ndm[i];const pdi=100*pW/trW,ndi=100*nW/trW;dxs.push(100*Math.abs(pdi-ndi)/(pdi+ndi||1))}let a=dxs.slice(0,p).reduce((x,y)=>x+y,0)/p;for(let i=p;i<dxs.length;i++)a=(a*(p-1)+dxs[i])/p;return a}
-function macdHist(closes){const e12=ema(closes,12),e26=ema(closes,26);const line=closes.map((_,i)=>(e12[i]!=null&&e26[i]!=null)?e12[i]-e26[i]:null).filter(v=>v!=null);const sig=ema(line,9);return line[line.length-1]-sig[sig.length-1]}
-
-/* ====== SMC 核心函數 ====== */
-
-// 偵測 FVG（Fair Value Gap）
-function detectFVG(o,h,l,c,lookback=50){
-  const len=c.length;
-  let bullFVG=null,bearFVG=null;
-  const start=Math.max(0,len-lookback);
-  for(let i=start+2;i<len;i++){
-    // 多頭 FVG：K1高 < K3低，有上升缺口
-    if(h[i-2]<l[i]&&!bullFVG){
-      bullFVG={top:l[i],bottom:h[i-2],mid:(l[i]+h[i-2])/2,idx:i};
-    }
-    // 空頭 FVG：K1低 > K3高，有下降缺口
-    if(l[i-2]>h[i]&&!bearFVG){
-      bearFVG={top:l[i-2],bottom:h[i],mid:(l[i-2]+h[i])/2,idx:i};
-    }
-  }
-  return{bullFVG,bearFVG};
-}
-
-// 偵測 Order Block
-function detectOB(o,h,l,c,lookback=60){
-  const len=c.length;
-  let bullOB=null,bearOB=null;
-  const start=Math.max(1,len-lookback);
-  for(let i=start;i<len-2;i++){
-    const isBear=c[i]<o[i]; // 這根是空頭K
-    const isNextBull=c[i+1]>o[i+1]&&c[i+2]>o[i+2]; // 後面是多頭衝動
-    if(isBear&&isNextBull&&!bullOB){
-      // 多頭 OB：空頭K之前是買方OB
-      bullOB={top:h[i],bottom:l[i],mid:(h[i]+l[i])/2,idx:i};
-    }
-    const isBull=c[i]>o[i]; // 這根是多頭K
-    const isNextBear=c[i+1]<o[i+1]&&c[i+2]<o[i+2]; // 後面是空頭衝動
-    if(isBull&&isNextBear&&!bearOB){
-      // 空頭 OB：多頭K之後是賣方OB
-      bearOB={top:h[i],bottom:l[i],mid:(h[i]+l[i])/2,idx:i};
-    }
-  }
-  return{bullOB,bearOB};
-}
-
-// 偵測 BOS / CHoCH（市場結構）
-function detectStructure(h,l,c,lookback=40){
-  const len=c.length;
-  const start=Math.max(5,len-lookback);
-  
-  // 找擺動高低點
-  const swHigh=[],swLow=[];
-  for(let i=start+3;i<len-3;i++){
-    let isH=true,isL=true;
-    for(let j=i-3;j<=i+3;j++){
-      if(j!==i){
-        if(h[j]>=h[i])isH=false;
-        if(l[j]<=l[i])isL=false;
-      }
-    }
-    if(isH)swHigh.push({i,p:h[i]});
-    if(isL)swLow.push({i,p:l[i]});
-  }
-  
-  const price=c[len-1];
-  let bos='wait',choch=false;
-  
-  if(swHigh.length>=2&&swLow.length>=2){
-    const lastH=swHigh[swHigh.length-1],prevH=swHigh[swHigh.length-2];
-    const lastL=swLow[swLow.length-1],prevL=swLow[swLow.length-2];
-    
-    const hh=lastH.p>prevH.p; // Higher High
-    const hl=lastL.p>prevL.p; // Higher Low
-    const lh=lastH.p<prevH.p; // Lower High
-    const ll=lastL.p<prevL.p; // Lower Low
-    
-    // BOS 確認
-    if(hh&&hl)bos='long';
-    else if(lh&&ll)bos='short';
-    
-    // CHoCH：方向剛轉
-    if(bos==='long'&&lastL.p>prevL.p&&lastH.i>lastL.i)choch=true;
-    if(bos==='short'&&lastH.p<prevH.p&&lastL.i>lastH.i)choch=true;
-  }
-  
-  // 流動性目標（最近高低點）
-  const recent20h=Math.max(...h.slice(-20));
-  const recent20l=Math.min(...l.slice(-20));
-  
-  return{bos,choch,swHigh,swLow,recent20h,recent20l};
-}
-
-/* ====== 綜合 SMC 分析 ====== */
-function smcAnalyze(d){
-  const {o,h,l,c}=d;
-  const len=c.length;
-  const price=c[len-1];
-  
-  const struct=detectStructure(h,l,c);
-  const {bullFVG,bearFVG}=detectFVG(o,h,l,c);
-  const {bullOB,bearOB}=detectOB(o,h,l,c);
-  
-  // 基礎指標
-  const e20=ema(c,20).pop(),e50=ema(c,50).pop(),e200=ema(c,200).pop();
-  const rsiV=rsi(c),atrV=atr(h,l,c),adxV=adx(h,l,c),macdV=macdHist(c);
-  const moUp=rsiV>48&&macdV>0,moDn=rsiV<52&&macdV<0;
-  
-  // SMC 做多條件
-  let dir='wait',entry=null,sl=null,tp1=null,tp2=null,reason='',
-      bosOk=false,fvgOk=false,obOk=false,moOk=false;
-  
-  if(struct.bos==='long'){
-    bosOk=true;
-    if(bullFVG&&price>=bullFVG.bottom*0.999&&price<=bullFVG.top*1.01)fvgOk=true;
-    if(bullOB&&price>=bullOB.bottom*0.998&&price<=bullOB.top*1.015)obOk=true;
-    if(moUp)moOk=true;
-    
-    if(bosOk&&(fvgOk||obOk)&&moOk){
-      dir='long';
-      // 進場：FVG 中點或 OB 中點，取較近的
-      const fvgEntry=bullFVG?bullFVG.mid:null;
-      const obEntry=bullOB?bullOB.mid:null;
-      entry=fvgEntry||obEntry||price;
-      // 止損：OB 下方或 FVG 下方
-      const rawSLlong=bullOB?bullOB.bottom:bullFVG?bullFVG.bottom:entry-1.5*atrV;
-      sl=Math.min(rawSLlong,entry)*0.999;
-      const risk=Math.max(entry-sl,atrV*0.5);
-      tp1=entry+risk;
-      tp2=entry+risk*1.5;
-      reason=`BOS 多頭${struct.choch?' (CHoCH剛轉)':''}${fvgOk?' + FVG支撐':''}${obOk?' + OB確認':''}`;
-    }
-  }
-  
-  if(struct.bos==='short'&&dir==='wait'){
-    bosOk=true;
-    if(bearFVG&&price<=bearFVG.top*1.001&&price>=bearFVG.bottom*0.99)fvgOk=true;
-    if(bearOB&&price<=bearOB.top*1.002&&price>=bearOB.bottom*0.985)obOk=true;
-    if(moDn)moOk=true;
-    
-    if(bosOk&&(fvgOk||obOk)&&moOk){
-      dir='short';
-      const fvgEntry=bearFVG?bearFVG.mid:null;
-      const obEntry=bearOB?bearOB.mid:null;
-      entry=fvgEntry||obEntry||price;
-      const rawSLshort=bearFVG?bearFVG.top:bearOB?bearOB.top:entry+1.5*atrV;
-      sl=Math.max(rawSLshort,entry)*1.002;
-      const risk=Math.max(sl-entry,atrV*0.5);
-      tp1=entry-risk;
-      tp2=entry-risk*1.5;
-      reason=`BOS 空頭${struct.choch?' (CHoCH剛轉)':''}${fvgOk?' + FVG壓力':''}${obOk?' + OB確認':''}`;
-    }else if(bosOk){
-      bosOk=true; // 結構對但條件未齊
-    }
-  }
-  
-  // 觀望時也顯示BOS方向
-  if(dir==='wait'){
-    bosOk=struct.bos!=='wait';
-  }
-  
-  return{
-    dir,entry:entry||price,sl,tp1,tp2,reason,
-    struct,bullFVG,bearFVG,bullOB,bearOB,
-    e20,e50,e200,rsi:rsiV,atr:atrV,adx:adxV,macd:macdV,
-    moUp,moDn,bosOk,fvgOk,obOk,moOk,price
-  };
-}
-
-/* ====== 行情（先試 Bitunix，失敗用幣安）====== */
+const TFS=[['1m','1分'],['5m','5分'],['15m','15分'],['1h','1小時'],['4h','4小時'],['1d','日線']];
+let state={sym:'BTCUSDT',tf:'15m',data:null,mtf:{},signal:null,tracking:false,kl:{}};
+let alerted=new Set();
 let dataSource='';
-async function klines(sym,tf,limit=300){
-  try{
-    const ctrl=new AbortController();
-    setTimeout(()=>ctrl.abort(),5000);
-    const r=await fetch(`https://fapi.bitunix.com/api/v1/futures/market/kline?symbol=${sym}&interval=${tf}&limit=${limit}`,{signal:ctrl.signal});
-    if(!r.ok)throw new Error('Bitunix HTTP '+r.status);
-    const json=await r.json();
-    if(json.code!==0)throw new Error('Bitunix API錯誤');
-    const raw=json.data;
-    dataSource='🟢 Bitunix';
-    return{o:raw.map(k=>+k.open),h:raw.map(k=>+k.high),l:raw.map(k=>+k.low),c:raw.map(k=>+k.close)};
-  }catch(e){
-    console.log('Bitunix 失敗，改用幣安:',e.message);
-    dataSource='🟡 幣安（Bitunix 不可用）';
-    const r=await fetch(`https://fapi.binance.com/fapi/v1/klines?symbol=${sym}&interval=${tf}&limit=${limit}`);
-    if(!r.ok)throw new Error('行情載入失敗');
-    const raw=await r.json();
-    return{o:raw.map(k=>+k[1]),h:raw.map(k=>+k[2]),l:raw.map(k=>+k[3]),c:raw.map(k=>+k[4])};
-  }
-}
-
-/* ====== 渲染 ====== */
-function renderMain(an){
-  const d=state.data;
-  const c=d.c,prev=c[c.length-2];
-  const pct=(an.price-prev)/prev*100;
-  $('price').textContent=fmt(an.price);
-  $('price').className='price num '+(pct>=0?'up':'down');
-  $('chg').textContent=(pct>=0?'+':'')+pct.toFixed(2)+'%';
-  $('chg').className='chg num '+(pct>=0?'up':'down');
-  $('updated').textContent='更新 '+new Date().toLocaleTimeString('zh-TW')+' | 數據來源: '+dataSource;
-  
-  // 指標
-  $('iRsi').textContent=an.rsi.toFixed(1);
-  $('iAdx').textContent=an.adx.toFixed(1);
-  $('iAtr').textContent=fmt(an.atr);
-  $('iE20').textContent=fmt(an.e20);
-  $('iE50').textContent=fmt(an.e50);
-  $('iE200').textContent=fmt(an.e200);
-  
-  // SMC 標籤
-  const tagsEl=$('smcTags');
-  tagsEl.innerHTML='';
-  const {struct,bullFVG,bearFVG,bullOB,bearOB}=an;
-  
-  // BOS 標籤
-  if(struct.bos==='long'){
-    tagsEl.innerHTML+=`<span class="smc-tag bos-long">📈 BOS 多頭${struct.choch?' CHoCH':''}</span>`;
-  }else if(struct.bos==='short'){
-    tagsEl.innerHTML+=`<span class="smc-tag bos-short">📉 BOS 空頭${struct.choch?' CHoCH':''}</span>`;
-  }else{
-    tagsEl.innerHTML+=`<span class="smc-tag none">⚓ 結構未定</span>`;
-  }
-  
-  // FVG 標籤
-  if(bullFVG)tagsEl.innerHTML+=`<span class="smc-tag fvg-bull">FVG🟩 ${fmt(bullFVG.bottom)}–${fmt(bullFVG.top)}</span>`;
-  if(bearFVG)tagsEl.innerHTML+=`<span class="smc-tag fvg-bear">FVG🟥 ${fmt(bearFVG.bottom)}–${fmt(bearFVG.top)}</span>`;
-  
-  // OB 標籤
-  if(bullOB)tagsEl.innerHTML+=`<span class="smc-tag ob-bull">OB🔲 ${fmt(bullOB.bottom)}–${fmt(bullOB.top)}</span>`;
-  if(bearOB)tagsEl.innerHTML+=`<span class="smc-tag ob-bear">OB🔳 ${fmt(bearOB.bottom)}–${fmt(bearOB.top)}</span>`;
-  
-  // Zone Bar
-  const zbar=$('zoneBar');
-  if(bullOB||bearOB||bullFVG||bearFVG){
-    zbar.style.display='block';
-    const ob=struct.bos==='long'?bullOB:bearOB;
-    const fvg=struct.bos==='long'?bullFVG:bearFVG;
-    $('zOB').textContent=ob?`${fmt(ob.bottom)} – ${fmt(ob.top)}`:'未偵測';
-    $('zOB').style.color=ob?(struct.bos==='long'?'var(--gold)':'var(--pink)'):'var(--dim)';
-    $('zFVG').textContent=fvg?`${fmt(fvg.bottom)} – ${fmt(fvg.top)}`:'未偵測';
-    $('zFVG').style.color=fvg?(struct.bos==='long'?'var(--green)':'var(--red)'):'var(--dim)';
-    $('zLiq').textContent=struct.bos==='long'?fmt(struct.recent20h):struct.bos==='short'?fmt(struct.recent20l):'--';
-  }
-  
-  // 紅綠燈
-  $('l1').textContent=struct.bos==='long'?'🟢':struct.bos==='short'?'🔴':'⚪';
-  $('l1d').textContent=struct.bos==='long'?'多頭 HH+HL 結構確認':struct.bos==='short'?'空頭 LH+LL 結構確認':'結構未定，等突破';
-  $('l2').textContent=an.fvgOk?'🟢':(bullFVG||bearFVG)?'⚪':'⚪';
-  $('l2d').textContent=an.fvgOk?'價格位於 FVG 不平衡區':(bullFVG||bearFVG)?'FVG 存在但價格未回踩':'未偵測到有效 FVG';
-  $('l3').textContent=an.obOk?'🟢':(bullOB||bearOB)?'⚪':'⚪';
-  $('l3d').textContent=an.obOk?'OB 支撐/壓力有效':(bullOB||bearOB)?'OB 存在但價格未到達':'未偵測到有效 OB';
-  $('l4').textContent=an.moUp?'🟢':an.moDn?'🔴':'⚪';
-  $('l4d').textContent=`RSI ${an.rsi.toFixed(1)}｜MACD ${an.macd>0?'翻紅':'翻綠'}`;
-  
-  // 偏向標籤
-  const tag=$('biasTag'),why=$('biasWhy');
-  if(an.dir==='long'){
-    tag.textContent='🚀 做多';tag.className='tag long blink';
-    why.textContent=an.reason||'SMC 多頭條件齊全';
-    $('lvEntry').textContent=fmt(an.entry);
-    $('lvSL').textContent=fmt(an.sl);
-    $('lvTP1').textContent=fmt(an.tp1);
-    $('lvTP2').textContent=fmt(an.tp2);
-    $('lvEntrySub').textContent='FVG/OB 回踩點';
-  }else if(an.dir==='short'){
-    tag.textContent='🔨 做空';tag.className='tag short blink';
-    why.textContent=an.reason||'SMC 空頭條件齊全';
-    $('lvEntry').textContent=fmt(an.entry);
-    $('lvSL').textContent=fmt(an.sl);
-    $('lvTP1').textContent=fmt(an.tp1);
-    $('lvTP2').textContent=fmt(an.tp2);
-    $('lvEntrySub').textContent='FVG/OB 回踩點';
-  }else{
-    const bosDir=struct.bos==='long'?'多頭結構但條件未齊（等回踩FVG/OB）':struct.bos==='short'?'空頭結構但條件未齊（等反彈FVG/OB）':'結構未定，等 BOS 確認方向';
-    tag.textContent='⚓ 觀望';tag.className='tag wait';
-    why.textContent=bosDir;
-    $('lvEntry').textContent='--';$('lvSL').textContent='--';
-    $('lvTP1').textContent='--';$('lvTP2').textContent='--';
-    $('lvEntrySub').textContent='等待條件齊全';
-  }
-}
-
-async function renderMTF(){
-  const body=$('mtfBody');body.innerHTML='';
-  for(const[tf,name]of TFS){
-    try{
-      const d=await klines(state.symbol,tf,300);
-      const an=smcAnalyze(d);state.mtf[name]=an;
-      const pill=an.dir==='long'?'<span class="pill long">🚀 做多</span>':an.dir==='short'?'<span class="pill short">🔨 做空</span>':'<span class="pill wait">⚓ 觀望</span>';
-      const bosStr=an.struct.bos==='long'?'<span style="color:var(--green)">多頭</span>':an.struct.bos==='short'?'<span style="color:var(--red)">空頭</span>':'<span style="color:var(--dim)">未定</span>';
-      const fvgStr=(an.bullFVG||an.bearFVG)?'<span style="color:var(--gold)">✓</span>':'<span style="color:var(--dim)">-</span>';
-      const vs=an.price>an.e200?'<span class="up">上方</span>':'<span class="down">下方</span>';
-      body.insertAdjacentHTML('beforeend',`<tr><td>${name}</td><td>${bosStr}</td><td>${fvgStr}</td><td class="num">${an.rsi.toFixed(1)}</td><td>${vs}</td></tr>`);
-    }catch(e){
-      body.insertAdjacentHTML('beforeend',`<tr><td>${name}</td><td colspan="4" style="color:var(--dim)">載入失敗</td></tr>`);
-    }
-  }
-}
-
-async function refresh(){
-  $('err').style.display='none';
-  try{
-    state.data=await klines(state.symbol,state.tf,300);
-    renderMain(smcAnalyze(state.data));
-    renderMTF();
-  }catch(e){
-    $('err').textContent='⚠️ 無法取得行情：'+e.message;
-    $('err').style.display='block';
-  }
-}
-
-/* ====== AI 解盤 ====== */
-function localAnalysis(an){
-  const sym=state.symbol.replace('USDT','/USDT');
-  const struct=an.struct;
-  const bosText=struct.bos==='long'?'多頭 BOS（HH+HL）':struct.bos==='short'?'空頭 BOS（LH+LL）':'結構未定';
-  const fvgText=an.bullFVG?`多頭FVG ${fmt(an.bullFVG.bottom)}–${fmt(an.bullFVG.top)}`:an.bearFVG?`空頭FVG ${fmt(an.bearFVG.bottom)}–${fmt(an.bearFVG.top)}`:'未偵測到FVG';
-  const obText=an.bullOB?`多頭OB ${fmt(an.bullOB.bottom)}–${fmt(an.bullOB.top)}`:an.bearOB?`空頭OB ${fmt(an.bearOB.bottom)}–${fmt(an.bearOB.top)}`:'未偵測到OB';
-  let act;
-  if(an.dir==='long')act=`🚀 條件齊全，可考慮做多。\n進場：${fmt(an.entry)}\n止損：${fmt(an.sl)}\nTP1：${fmt(an.tp1)}（1:1）｜TP2：${fmt(an.tp2)}（1:1.5）\n建議等回踩 FVG/OB 區間確認後再進，不追高。`;
-  else if(an.dir==='short')act=`🔨 條件齊全，可考慮做空。\n進場：${fmt(an.entry)}\n止損：${fmt(an.sl)}\nTP1：${fmt(an.tp1)}（1:1）｜TP2：${fmt(an.tp2)}（1:1.5）\n建議等反彈至 FVG/OB 區間確認後再進，不追空。`;
-  else act=`⚓ 條件未齊全。${struct.bos!=='wait'?`\n目前 ${bosText}，等待價格回踩 ${struct.bos==='long'?'看漲FVG/OB':'看跌FVG/OB'} 且動能確認後才進場。`:'等 BOS 方向確認。'}`;
-  return`🐆 SMC 解盤｜${sym}（${state.tf}）\n\n📊 市場結構：${bosText}${struct.choch?' [CHoCH]':''}\n📊 FVG：${fvgText}\n🔲 OB：${obText}\n⚡ RSI：${an.rsi.toFixed(1)}｜MACD：${an.macd>0?'偏多':'偏空'}｜ADX：${an.adx.toFixed(1)}\n\n${act}\n\n⚠️ 合約有槓桿，單筆風險控制在本金 1–2%，止損掛了就不動。`;
-}
-
-$('aiBtn').addEventListener('click',async()=>{
-  if(!state.data)return;
-  const btn=$('aiBtn'),out=$('aiOut');
-  btn.disabled=true;out.className='ai-out show';
-  out.innerHTML='<span class="loading blink">🐆 獵豹鎖定目標，SMC解盤中…</span>';
-  const an=smcAnalyze(state.data);
-  const key=$('apiKey').value.trim();
-  const mtfSummary=Object.entries(state.mtf).map(([k,v])=>`${k}:${v.struct.bos==='long'?'多頭':v.struct.bos==='short'?'空頭':'未定'}(FVG:${v.bullFVG||v.bearFVG?'有':'無'})`).join('；');
-  const prompt=`你是翔懂團隊的 SMC/ICT 量化分析師，用繁體中文，200字內給出 SMC 角度的操作建議。
-幣種：${state.symbol} 週期：${state.tf} 現價：${an.price}
-市場結構：${an.struct.bos==='long'?'多頭BOS':an.struct.bos==='short'?'空頭BOS':'未定'}${an.struct.choch?' CHoCH':''}
-FVG：${an.bullFVG?`看漲${fmt(an.bullFVG.bottom)}-${fmt(an.bullFVG.top)}`:an.bearFVG?`看跌${fmt(an.bearFVG.bottom)}-${fmt(an.bearFVG.top)}`:'無'}
-OB：${an.bullOB?`看漲${fmt(an.bullOB.bottom)}-${fmt(an.bullOB.top)}`:an.bearOB?`看跌${fmt(an.bearOB.bottom)}-${fmt(an.bearOB.top)}`:'無'}
-RSI：${an.rsi.toFixed(1)} MACD：${an.macd>0?'正':'負'} ADX：${an.adx.toFixed(1)}
-方向判定：${an.dir==='long'?'做多':an.dir==='short'?'做空':'觀望'}
-多週期：${mtfSummary}`;
-  try{
-    const headers={'Content-Type':'application/json'};
-    if(key){headers['x-api-key']=key;headers['anthropic-version']='2023-06-01';headers['anthropic-dangerous-direct-browser-access']='true';}
-    const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers,body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:1000,messages:[{role:'user',content:prompt}]})});
-    if(!r.ok)throw new Error('');
-    const data=await r.json();
-    const text=(data.content||[]).map(i=>i.text||'').join('\n').trim();
-    if(!text)throw new Error('');
-    out.textContent='🤖 Claude SMC 解盤\n\n'+text;
-  }catch(e){out.textContent=localAnalysis(an);}
-  btn.disabled=false;
-});
-
+function fmt(n){if(n==null||isNaN(n))return'--';if(n>=10000)return n.toLocaleString('en-US',{maximumFractionDigits:1});if(n>=100)return n.toFixed(2);if(n>=1)return n.toFixed(3);if(n>=0.1)return n.toFixed(4);if(n>=0.001)return n.toFixed(5);return n.toFixed(8)}
+function fmtOI(n,p){if(n==null)return'--';const v=n*p;if(v>=1e9)return'$'+(v/1e9).toFixed(2)+'B';if(v>=1e6)return'$'+(v/1e6).toFixed(1)+'M';if(v>=1e3)return'$'+(v/1e3).toFixed(0)+'K';return'$'+v.toFixed(0)}
+function showToast(msg){const t=$('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3500)}
+function notify(t,b){showToast(t+' '+b);if(Notification.permission==='granted')new Notification(t,{body:b})}
+function ema(v,p){const k=2/(p+1);let e=v.slice(0,p).reduce((a,b)=>a+b,0)/p;const o=new Array(v.length).fill(null);o[p-1]=e;for(let i=p;i<v.length;i++){e=v[i]*k+e*(1-k);o[i]=e}return o}
+function rsi(c,p=14){let g=0,l=0;for(let i=1;i<=p;i++){const d=c[i]-c[i-1];if(d>0)g+=d;else l-=d}let ag=g/p,al=l/p;for(let i=p+1;i<c.length;i++){const d=c[i]-c[i-1];ag=(ag*(p-1)+Math.max(d,0))/p;al=(al*(p-1)+Math.max(-d,0))/p}return al===0?100:100-100/(1+ag/al)}
+function atr(h,l,c,p=14){const t=[];for(let i=1;i<c.length;i++)t.push(Math.max(h[i]-l[i],Math.abs(h[i]-c[i-1]),Math.abs(l[i]-c[i-1])));let a=t.slice(0,p).reduce((x,y)=>x+y,0)/p;for(let i=p;i<t.length;i++)a=(a*(p-1)+t[i])/p;return a}
+function adx(h,l,c,p=14){const n=c.length;if(n<p*2+2)return 0;const tr=[],pm=[],nm=[];for(let i=1;i<n;i++){const u=h[i]-h[i-1],d=l[i-1]-l[i];pm.push(u>d&&u>0?u:0);nm.push(d>u&&d>0?d:0);tr.push(Math.max(h[i]-l[i],Math.abs(h[i]-c[i-1]),Math.abs(l[i]-c[i-1])))}let tw=tr.slice(0,p).reduce((a,b)=>a+b,0),pw=pm.slice(0,p).reduce((a,b)=>a+b,0),nw=nm.slice(0,p).reduce((a,b)=>a+b,0);const dx=[];for(let i=p;i<tr.length;i++){tw=tw-tw/p+tr[i];pw=pw-pw/p+pm[i];nw=nw-nw/p+nm[i];const pi=100*pw/tw,ni=100*nw/tw;dx.push(100*Math.abs(pi-ni)/(pi+ni||1))}let a=dx.slice(0,p).reduce((x,y)=>x+y,0)/p;for(let i=p;i<dx.length;i++)a=(a*(p-1)+dx[i])/p;return a}
+function macd(c){const e12=ema(c,12),e26=ema(c,26);const line=c.map((_,i)=>(e12[i]!=null&&e26[i]!=null)?e12[i]-e26[i]:null).filter(v=>v!=null);const sig=ema(line,9);return line[line.length-1]-sig[sig.length-1]}
+function fvg(o,h,l,c,lb=60){const n=c.length;let bf=null,br=null;for(let i=Math.max(2,n-lb);i<n;i++){if(h[i-2]<l[i]&&!bf)bf={top:l[i],bot:h[i-2],mid:(l[i]+h[i-2])/2};if(l[i-2]>h[i]&&!br)br={top:l[i-2],bot:h[i],mid:(l[i-2]+h[i])/2}}return{bf,br}}
+function ob(o,h,l,c,lb=70){const n=c.length;let bo=null,so=null;for(let i=Math.max(1,n-lb);i<n-2;i++){if(c[i]<o[i]&&c[i+1]>o[i+1]&&c[i+2]>o[i+2]&&!bo)bo={top:h[i],bot:l[i],mid:(h[i]+l[i])/2};if(c[i]>o[i]&&c[i+1]<o[i+1]&&c[i+2]<o[i+2]&&!so)so={top:h[i],bot:l[i],mid:(h[i]+l[i])/2}}return{bo,so}}
+function struct(h,l,c,lb=40){const n=c.length,sh=[],sl=[];for(let i=Math.max(5,n-lb)+3;i<n-3;i++){let iH=true,iL=true;for(let j=i-3;j<=i+3;j++){if(j!==i){if(h[j]>=h[i])iH=false;if(l[j]<=l[i])iL=false}}if(iH)sh.push({i,p:h[i]});if(iL)sl.push({i,p:l[i]})}let bos='wait',choch=false;if(sh.length>=2&&sl.length>=2){const lh=sh[sh.length-1],ph=sh[sh.length-2],ll=sl[sl.length-1],pl=sl[sl.length-2];if(lh.p>ph.p&&ll.p>pl.p)bos='long';else if(lh.p<ph.p&&ll.p<pl.p)bos='short';if(bos==='long'&&ll.p>pl.p&&lh.i>ll.i)choch=true;if(bos==='short'&&lh.p<ph.p&&ll.i>lh.i)choch=true}return{bos,choch,h20:Math.max(...h.slice(-20)),l20:Math.min(...l.slice(-20))}}
+function analyze(d){const{o,h,l,c}=d,n=c.length,price=c[n-1];const st=struct(h,l,c),{bf,br}=fvg(o,h,l,c),{bo,so}=ob(o,h,l,c);const e20=ema(c,20).pop(),e50=ema(c,50).pop(),e200=ema(c,200).pop();const rv=rsi(c),av=atr(h,l,c),dv=adx(h,l,c),mv=macd(c);const mU=rv>48&&mv>0,mD=rv<52&&mv<0;let dir='wait',entry=null,sl=null,tps=[],reason='',fOk=false,oOk=false,mOk=false;if(st.bos==='long'){if(bf&&price>=bf.bot*0.999&&price<=bf.top*1.01)fOk=true;if(bo&&price>=bo.bot*0.998&&price<=bo.top*1.015)oOk=true;if(mU)mOk=true;if((fOk||oOk)&&mOk){dir='long';entry=(fOk?bf:bo).mid;const rsl=bo?bo.bot:bf?bf.bot:entry-1.5*av;sl=Math.min(rsl,entry)*0.999;const risk=Math.max(entry-sl,av*0.5);tps=[entry+risk,entry+risk*1.5,entry+risk*2,entry+risk*2.5,entry+risk*5];reason=`BOS多頭${st.choch?' CHoCH':''}${fOk?' + FVG':''}${oOk?' + OB':''}`}}if(st.bos==='short'&&dir==='wait'){if(br&&price<=br.top*1.001&&price>=br.bot*0.99)fOk=true;if(so&&price<=so.top*1.002&&price>=so.bot*0.985)oOk=true;if(mD)mOk=true;if((fOk||oOk)&&mOk){dir='short';entry=(fOk?br:so).mid;const rsl=br?br.top:so?so.top:entry+1.5*av;sl=Math.max(rsl,entry)*1.002;const risk=Math.max(sl-entry,av*0.5);tps=[entry-risk,entry-risk*1.5,entry-risk*2,entry-risk*2.5,entry-risk*5];reason=`BOS空頭${st.choch?' CHoCH':''}${fOk?' + FVG':''}${oOk?' + OB':''}`}}return{dir,entry:entry||price,sl,tps,reason,st,bf,br,bo,so,e20,e50,e200,rsi:rv,atr:av,adx:dv,macd:mv,mU,mD,fOk,oOk,mOk,price}}
+async function klines(sym,tf,limit=300){try{const ctrl=new AbortController();setTimeout(()=>ctrl.abort(),5000);const r=await fetch(`https://fapi.bitunix.com/api/v1/futures/market/kline?symbol=${sym}&interval=${tf}&limit=${limit}`,{signal:ctrl.signal});if(!r.ok)throw 0;const j=await r.json();if(j.code!==0)throw 0;dataSource='🟢 Bitunix';return{o:j.data.map(k=>+k.open),h:j.data.map(k=>+k.high),l:j.data.map(k=>+k.low),c:j.data.map(k=>+k.close)}}catch{dataSource='🟡 幣安';const r=await fetch(`https://fapi.binance.com/fapi/v1/klines?symbol=${sym}&interval=${tf}&limit=${limit}`);if(!r.ok)throw new Error('行情失敗');const raw=await r.json();return{o:raw.map(k=>+k[1]),h:raw.map(k=>+k[2]),l:raw.map(k=>+k[3]),c:raw.map(k=>+k[4])}}}
+async function safeGet(url){try{const r=await fetch(url);if(!r.ok)return null;return await r.json()}catch{return null}}
+async function loadStats(sym){const[fund,oi,ls,fg]=await Promise.allSettled([safeGet(`https://fapi.binance.com/fapi/v1/premiumIndex?symbol=${sym}`),safeGet(`https://fapi.binance.com/fapi/v1/openInterest?symbol=${sym}`),safeGet(`https://fapi.binance.com/futures/data/globalLongShortAccountRatio?symbol=${sym}&period=1h&limit=1`),safeGet('https://api.alternative.me/fng/?limit=1')]);const price=state.data?state.data.c[state.data.c.length-1]:1;if(fund.status==='fulfilled'&&fund.value){const fr=+fund.value.lastFundingRate;$('vfund').textContent=(fr*100).toFixed(4)+'%';$('pfund').className='pill'+(fr>0.001?' pos':fr<-0.001?' neg':'')}if(oi.status==='fulfilled'&&oi.value)$('voi').textContent=fmtOI(+oi.value.openInterest,price);if(ls.status==='fulfilled'&&ls.value&&ls.value[0]){const d=ls.value[0];$('vls').textContent=`多${(+d.longAccount*100).toFixed(1)}% 空${(+d.shortAccount*100).toFixed(1)}%`;$('pls').className='pill'+(+d.longAccount>0.6?' pos':+d.shortAccount>0.6?' neg':'')}if(fg.status==='fulfilled'&&fg.value&&fg.value.data){const v=+fg.value.data[0].value;$('vfg').textContent=`${v} ${fg.value.data[0].value_classification}`;$('pfg').className='pill'+(v>=75?' pos':v<=25?' neg':'')}}
+async function loadKeyLevels(sym){try{const[dr,wr]=await Promise.all([safeGet(`https://fapi.binance.com/fapi/v1/klines?symbol=${sym}&interval=1d&limit=3`),safeGet(`https://fapi.binance.com/fapi/v1/klines?symbol=${sym}&interval=1w&limit=3`)]);if(!dr||!wr)return;const pd=dr[dr.length-2],pw=wr[wr.length-2];state.kl={pdh:+pd[2],pdl:+pd[3],pdo:+pd[1],pdc:+pd[4],pwh:+pw[2],pwl:+pw[3],pwo:+pw[1],pwc:+pw[4]};$('kPDH').textContent=fmt(state.kl.pdh);$('kPDL').textContent=fmt(state.kl.pdl);$('kPWH').textContent=fmt(state.kl.pwh);$('kPWL').textContent=fmt(state.kl.pwl);$('kPDO').textContent=fmt(state.kl.pdo);$('kPDC').textContent=fmt(state.kl.pdc);$('kPWO').textContent=fmt(state.kl.pwo);$('kPWC').textContent=fmt(state.kl.pwc)}catch{}}
+function toggleTrack(){if(!state.signal||state.signal.dir==='wait'){showToast('❌ 目前無訊號可追蹤');return}state.tracking=!state.tracking;alerted.clear();if(state.tracking){if(Notification.permission==='default')Notification.requestPermission();$('tbtn').textContent='🔴 停止追蹤';$('tbtn').className='tbtn on';$('tstat').classList.add('show');updateTrackUI();showToast('✅ 追蹤中！價格到達時會通知你')}else{$('tbtn').textContent='📍 追蹤此訊號';$('tbtn').className='tbtn off';$('tstat').classList.remove('show')}}
+function updateTrackUI(){const s=state.signal;if(!s)return;const dir=s.dir==='long'?'做多 🚀':'做空 🔨';$('tinfo').innerHTML=`<div class="tsr"><span>${dir} ${state.sym}</span><span>進場 ${fmt(s.entry)}</span></div><div class="tsr"><span>止損</span><span style="color:var(--red)">${fmt(s.sl)}</span></div><div class="tsr"><span>TP3</span><span style="color:var(--green)">${fmt(s.tps[2])}</span></div><div class="tsr"><span>TP5(5R)🎯</span><span style="color:var(--cyan)">${fmt(s.tps[4])}</span></div>`}
+function checkTrack(price){if(!state.tracking||!state.signal)return;const{entry,sl,tps,dir}=state.signal;if(!alerted.has('near')&&Math.abs(price-entry)/entry<0.002){notify('⚠️ 接近進場',`${state.sym} ${fmt(price)}`);alerted.add('near')}if(!alerted.has('entry')&&(dir==='long'?price<=entry:price>=entry)){notify('🎯 到達進場！',`${fmt(entry)}`);alerted.add('entry')}tps.forEach((tp,i)=>{const k=`tp${i}`;if(!alerted.has(k)&&(dir==='long'?price>=tp:price<=tp)){notify(`💰 TP${i+1} 達到！`,`${fmt(tp)}`);alerted.add(k)}});if(!alerted.has('sl')&&(dir==='long'?price<=sl:price>=sl)){notify('🛡 止損觸發！',`${fmt(sl)}`);alerted.add('sl');state.tracking=false;$('tbtn').textContent='📍 追蹤此訊號';$('tbtn').className='tbtn off';$('tstat').classList.remove('show')}}
+function renderMain(an){const c=state.data.c,prev=c[c.length-2],pct=(an.price-prev)/prev*100;$('price').textContent=fmt(an.price);$('price').className='price num '+(pct>=0?'up':'down');$('chg').textContent=(pct>=0?'+':'')+pct.toFixed(2)+'%';$('chg').className='chg num '+(pct>=0?'up':'down');$('upd').textContent=new Date().toLocaleTimeString('zh-TW')+' | '+dataSource;$('vsrc').textContent=dataSource;$('iRsi').textContent=an.rsi.toFixed(1);$('iAdx').textContent=an.adx.toFixed(1);$('iAtr').textContent=fmt(an.atr);$('iE20').textContent=fmt(an.e20);$('iE50').textContent=fmt(an.e50);$('iE200').textContent=fmt(an.e200);const tg=$('tags');tg.innerHTML='';const{st,bf,br,bo,so}=an;if(st.bos==='long')tg.innerHTML+=`<span class="t bl">📈 BOS多頭${st.choch?' CHoCH':''}</span>`;else if(st.bos==='short')tg.innerHTML+=`<span class="t bs">📉 BOS空頭${st.choch?' CHoCH':''}</span>`;else tg.innerHTML+=`<span class="t n">⚓ 結構未定</span>`;if(bf)tg.innerHTML+=`<span class="t fb">FVG🟩 ${fmt(bf.bot)}–${fmt(bf.top)}</span>`;if(br)tg.innerHTML+=`<span class="t fs">FVG🟥 ${fmt(br.bot)}–${fmt(br.top)}</span>`;if(bo)tg.innerHTML+=`<span class="t ob">OB🔲 ${fmt(bo.bot)}–${fmt(bo.top)}</span>`;if(so)tg.innerHTML+=`<span class="t os">OB🔳 ${fmt(so.bot)}–${fmt(so.top)}</span>`;const zb=$('zone');if(bo||so||bf||br){zb.style.display='block';const oz=st.bos==='long'?bo:so,fz=st.bos==='long'?bf:br;$('zob').textContent=oz?`${fmt(oz.bot)} – ${fmt(oz.top)}`:'未偵測';$('zob').style.color=oz?(st.bos==='long'?'var(--gold)':'var(--pink)'):'var(--dim)';$('zfvg').textContent=fz?`${fmt(fz.bot)} – ${fmt(fz.top)}`:'未偵測';$('zfvg').style.color=fz?(st.bos==='long'?'var(--green)':'var(--red)'):'var(--dim)';$('zliq').textContent=st.bos==='long'?fmt(st.h20):st.bos==='short'?fmt(st.l20):'--'}$('l1').textContent=st.bos==='long'?'🟢':st.bos==='short'?'🔴':'⚪';$('l1d').textContent=st.bos==='long'?'多頭HH+HL確認':st.bos==='short'?'空頭LH+LL確認':'等待BOS';$('l2').textContent=an.fOk?'🟢':'⚪';$('l2d').textContent=an.fOk?'FVG回踩確認':(bf||br)?'FVG存在未回踩':'未偵測';$('l3').textContent=an.oOk?'🟢':'⚪';$('l3d').textContent=an.oOk?'OB支撐有效':(bo||so)?'OB存在未到達':'未偵測';$('l4').textContent=an.mU?'🟢':an.mD?'🔴':'⚪';$('l4d').textContent=`RSI ${an.rsi.toFixed(1)} | MACD ${an.macd>0?'偏多':'偏空'}`;const tag=$('btag'),why=$('bwhy');if(an.dir==='long'){tag.textContent='🚀 做多';tag.className='btag long blink';why.textContent=an.reason;$('lEntry').textContent=fmt(an.entry);$('lSL').textContent=fmt(an.sl);$('lESub').textContent='FVG/OB回踩點';$('lSSub').textContent='OB下方 ✅';an.tps.forEach((tp,i)=>$(`lTP${i+1}`).textContent=fmt(tp));state.signal=an;updateTrackUI()}else if(an.dir==='short'){tag.textContent='🔨 做空';tag.className='btag short blink';why.textContent=an.reason;$('lEntry').textContent=fmt(an.entry);$('lSL').textContent=fmt(an.sl);$('lESub').textContent='FVG/OB反彈點';$('lSSub').textContent='OB上方 ✅';an.tps.forEach((tp,i)=>$(`lTP${i+1}`).textContent=fmt(tp));state.signal=an;updateTrackUI()}else{tag.textContent='⚓ 觀望';tag.className='btag wait';why.textContent=st.bos==='long'?'多頭結構，等回踩FVG/OB':st.bos==='short'?'空頭結構，等反彈FVG/OB':'等BOS方向確認';['Entry','SL','TP1','TP2','TP3','TP4','TP5'].forEach(k=>$('l'+k).textContent='--');if(state.tracking)toggleTrack();state.signal=null}checkTrack(an.price)}
+async function renderMTF(){const body=$('mtfBody');body.innerHTML='';for(const[tf,name]of TFS){try{const d=await klines(state.sym,tf,300);const an=analyze(d);state.mtf[name]=an;const bos=an.st.bos==='long'?`<span style="color:var(--green)">多頭</span>`:an.st.bos==='short'?`<span style="color:var(--red)">空頭</span>`:`<span style="color:var(--dim)">未定</span>`;const fvgS=(an.bf||an.br)?`<span style="color:var(--gold)">✓</span>`:`<span style="color:var(--dim)">-</span>`;const vs=an.price>an.e200?'<span class="up">↑上方</span>':'<span class="down">↓下方</span>';body.insertAdjacentHTML('beforeend',`<tr><td>${name}</td><td>${bos}</td><td>${fvgS}</td><td class="num">${an.rsi.toFixed(1)}</td><td>${vs}</td></tr>`)}catch{body.insertAdjacentHTML('beforeend',`<tr><td>${name}</td><td colspan="4" style="color:var(--dim)">失敗</td></tr>`)}}}
+function localAI(an){const sym=state.sym.replace('USDT','/USDT'),kl=state.kl;const klvls=[kl.pdh,kl.pdl,kl.pwh,kl.pwl].filter(Boolean);let tw='';if(an.tps.length&&klvls.length){an.tps.forEach((tp,i)=>{const near=klvls.find(lv=>Math.abs(lv-tp)/tp<0.005);if(near)tw+=`\n⚠️ TP${i+1}(${fmt(tp)})接近${fmt(near)}，建議提前出場`})}const st=an.st.bos==='long'?'多頭BOS':an.st.bos==='short'?'空頭BOS':'結構未定';let act=an.dir==='long'?`🚀 做多\n進場:${fmt(an.entry)} SL:${fmt(an.sl)}\nTP1:${fmt(an.tps[0])} TP3:${fmt(an.tps[2])} TP5:${fmt(an.tps[4])}`:an.dir==='short'?`🔨 做空\n進場:${fmt(an.entry)} SL:${fmt(an.sl)}\nTP1:${fmt(an.tps[0])} TP3:${fmt(an.tps[2])} TP5:${fmt(an.tps[4])}`:`⚓ 觀望\n${st}，等待回踩確認`;return`🐆 翔董狙擊解盤｜${sym}（${state.tf}）\n\n結構：${st}${an.st.choch?' [CHoCH]':''}\nFVG：${an.bf?`多頭${fmt(an.bf.bot)}-${fmt(an.bf.top)}`:an.br?`空頭${fmt(an.br.bot)}-${fmt(an.br.top)}`:'無'}\nOB：${an.bo?`多頭${fmt(an.bo.bot)}-${fmt(an.bo.top)}`:an.so?`空頭${fmt(an.so.bot)}-${fmt(an.so.top)}`:'無'}\nRSI:${an.rsi.toFixed(1)} ADX:${an.adx.toFixed(1)} MACD:${an.macd>0?'偏多':'偏空'}\n\n${act}${tw}\n\n⚠️ 合約高風險，單筆風險控1-2%`}
+$('aiBtn').addEventListener('click',async()=>{if(!state.data)return;const btn=$('aiBtn'),out=$('aiOut');btn.disabled=true;out.className='aiout show';out.innerHTML='<span style="color:var(--pink)">🐆 翔董AI狙擊分析中…</span>';const an=analyze(state.data),key=$('apiKey').value.trim();const kl=state.kl,mtfS=Object.entries(state.mtf).map(([k,v])=>`${k}:${v.st.bos==='long'?'多頭':v.st.bos==='short'?'空頭':'未定'}`).join('；');const prompt=`你是翔董CryptoSniper的SMC量化分析師，繁體中文，300字內給出精準操作建議。\n幣種:${state.sym} 週期:${state.tf} 現價:${an.price}\n結構:${an.st.bos==='long'?'多頭BOS':an.st.bos==='short'?'空頭BOS':'未定'}${an.st.choch?' CHoCH':''}\nFVG:${an.bf?`多頭${fmt(an.bf.bot)}-${fmt(an.bf.top)}`:an.br?`空頭${fmt(an.br.bot)}-${fmt(an.br.top)}`:'無'}\nOB:${an.bo?`多頭${fmt(an.bo.bot)}-${fmt(an.bo.top)}`:an.so?`空頭${fmt(an.so.bot)}-${fmt(an.so.top)}`:'無'}\nRSI:${an.rsi.toFixed(1)} MACD:${an.macd>0?'正':'負'} ADX:${an.adx.toFixed(1)}\n方向:${an.dir==='long'?'做多':an.dir==='short'?'做空':'觀望'}\nTPs:${an.tps.map((t,i)=>`TP${i+1}=${fmt(t)}`).join(' ')}\n前日高:${fmt(kl.pdh)} 前日低:${fmt(kl.pdl)} 前週高:${fmt(kl.pwh)} 前週低:${fmt(kl.pwl)}\n多週期:${mtfS}\n請說明進場原因、TP注意事項、操作建議。`;try{const h={'Content-Type':'application/json'};if(key){h['x-api-key']=key;h['anthropic-version']='2023-06-01';h['anthropic-dangerous-direct-browser-access']='true'}const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:h,body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:1000,messages:[{role:'user',content:prompt}]})});if(!r.ok)throw 0;const d=await r.json();const txt=(d.content||[]).map(i=>i.text||'').join('\n').trim();if(!txt)throw 0;out.textContent='🤖 AI狙擊分析\n\n'+txt}catch{out.textContent=localAI(an)}btn.disabled=false});
+async function refresh(){$('err').style.display='none';try{state.data=await klines(state.sym,state.tf,300);const an=analyze(state.data);renderMain(an);loadStats(state.sym);loadKeyLevels(state.sym);renderMTF()}catch(e){$('err').textContent='⚠️ '+e.message;$('err').style.display='block'}}
 $('refresh').addEventListener('click',refresh);
-$('symbol').addEventListener('change',e=>{state.symbol=e.target.value;refresh()});
+$('sym').addEventListener('change',e=>{state.sym=e.target.value;state.signal=null;if(state.tracking)toggleTrack();refresh()});
 $('tf').addEventListener('change',e=>{state.tf=e.target.value;refresh()});
 refresh();
-setInterval(()=>{if(state.data)refresh()},60000);
+setInterval(refresh,30000);
 </script>
 </body>
 </html>
