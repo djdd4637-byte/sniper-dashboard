@@ -49,6 +49,7 @@ button.btn:disabled{opacity:.5;cursor:wait}
 .lv.sl .val{color:var(--red)}
 .lv.tp .val{color:var(--green)}
 .lv .sub{font-size:10px;color:var(--dim);margin-top:2px}
+/* SMC Tags */
 .smc-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
 .smc-tag{padding:3px 10px;border-radius:99px;font-size:11px;font-weight:700}
 .smc-tag.bos-long{background:rgba(39,217,139,.15);color:var(--green);border:1px solid rgba(39,217,139,.3)}
@@ -58,15 +59,18 @@ button.btn:disabled{opacity:.5;cursor:wait}
 .smc-tag.ob-bull{background:rgba(232,180,74,.12);color:var(--gold);border:1px solid rgba(232,180,74,.3)}
 .smc-tag.ob-bear{background:rgba(255,95,162,.12);color:var(--pink);border:1px solid rgba(255,95,162,.3)}
 .smc-tag.none{background:rgba(154,151,163,.1);color:var(--dim);border:1px solid var(--line)}
+/* Lights */
 .lights{display:flex;flex-direction:column;gap:8px}
 .light{display:flex;align-items:center;gap:10px;background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
 .light .dot{font-size:18px;min-width:22px}
 .light .t{font-weight:700;font-size:13px}
 .light .d{color:var(--dim);font-size:11px;margin-top:1px}
+/* Inds */
 .inds{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}
 .ind{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:9px 10px}
 .ind .label{font-size:10px;color:var(--dim)}
 .ind .val{font-size:17px}
+/* Table */
 table{width:100%;border-collapse:collapse}
 th,td{padding:9px 7px;text-align:left;font-size:13px;border-bottom:1px solid var(--line)}
 th{color:var(--dim);font-size:11px;letter-spacing:1px;font-weight:500}
@@ -74,6 +78,7 @@ td .pill{padding:2px 10px;border-radius:99px;font-size:12px;font-weight:700}
 .pill.long{background:rgba(39,217,139,.14);color:var(--green)}
 .pill.short{background:rgba(255,77,109,.14);color:var(--red)}
 .pill.wait{background:rgba(154,151,163,.1);color:var(--dim)}
+/* AI */
 .ai-out{background:var(--panel2);border:1px solid rgba(255,95,162,.3);border-radius:12px;padding:14px;font-size:13px;line-height:1.9;white-space:pre-wrap;display:none;margin-top:10px}
 .keybox{margin-top:8px;font-size:12px;color:var(--dim)}
 .keybox summary{cursor:pointer;padding:4px 2px}
@@ -84,6 +89,7 @@ td .pill{padding:2px 10px;border-radius:99px;font-size:12px;font-weight:700}
 footer{color:var(--dim);font-size:11px;text-align:center;padding:20px 12px;line-height:1.8}
 .err{color:var(--red);font-size:12px;padding:6px 4px;display:none}
 @media(prefers-reduced-motion:no-preference){.blink{animation:bl 1.6s ease-in-out infinite}@keyframes bl{50%{opacity:.4}}}
+/* SMC zone bar */
 .zone-bar{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin-bottom:10px;font-size:12px}
 .zone-title{color:var(--dim);font-size:10px;letter-spacing:1px;margin-bottom:6px;font-weight:700}
 .zone-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
@@ -117,16 +123,21 @@ footer{color:var(--dim);font-size:11px;text-align:center;padding:20px 12px;line-
     <button class="btn gold" id="refresh">⟳ 更新</button>
   </div>
 </header>
+
 <div class="ticker">
   <div class="price num" id="price">--</div>
   <div class="chg num" id="chg">--</div>
   <div class="meta" id="updated">尚未載入</div>
 </div>
 <div class="err" id="err"></div>
+
 <div class="grid">
+  <!-- 左：狙擊點位 -->
   <div class="card snipe">
     <h2>狙擊點位 SNIPE ZONE</h2>
+    <!-- SMC 結構標籤 -->
     <div class="smc-row" id="smcTags"></div>
+    <!-- SMC 區間 -->
     <div class="zone-bar" id="zoneBar" style="display:none">
       <div class="zone-title">SMC 關鍵區間</div>
       <div class="zone-row"><span class="zone-label">🔲 Order Block</span><span class="zone-val" id="zOB">--</span></div>
@@ -151,6 +162,8 @@ footer{color:var(--dim);font-size:11px;text-align:center;padding:20px 12px;line-
     </details>
     <div class="ai-out" id="aiOut"></div>
   </div>
+
+  <!-- 右：紅綠燈 -->
   <div class="card">
     <h2>SMC 進場條件</h2>
     <div class="lights">
@@ -170,36 +183,394 @@ footer{color:var(--dim);font-size:11px;text-align:center;padding:20px 12px;line-
     </div>
   </div>
 </div>
+
+<!-- 多週期 -->
 <div class="card" style="margin-top:12px">
   <h2>多週期結構確認</h2>
   <table>
     <thead><tr><th>週期</th><th>BOS方向</th><th>FVG</th><th>RSI</th><th>vs EMA200</th></tr></thead>
     <tbody id="mtfBody"><tr><td colspan="5" style="color:var(--dim)">載入中…</td></tr></tbody>
   </table>
-</div
+</div>
+
 <footer>⚠️ 本工具融合 SMC/ICT 概念自動計算，僅供教學參考，不構成投資建議。合約交易具高風險，請做好資金控管。｜不懂來問翔董 🐆</footer>
 </div>
+
 <script>
 const $=id=>document.getElementById(id);
 const TFS=[['15m','15分'],['1h','1小時'],['4h','4小時'],['1d','日線']];
 let state={symbol:'BTCUSDT',tf:'1h',data:null,mtf:{}};
-function fmt(n,forceDecimals){if(n==null||isNaN(n))return'--';if(forceDecimals)return n.toFixed(forceDecimals);if(n>=10000)return n.toLocaleString('en-US',{maximumFractionDigits:1});if(n>=100)return n.toFixed(2);if(n>=1)return n.toFixed(3);if(n>=0.1)return n.toFixed(4);return n.toFixed(6)}
+
+/* ====== 格式化 ====== */
+function fmt(n,forceDecimals){
+  if(n==null||isNaN(n))return'--';
+  if(forceDecimals)return n.toFixed(forceDecimals);
+  if(n>=10000)return n.toLocaleString('en-US',{maximumFractionDigits:1});
+  if(n>=100)return n.toFixed(2);
+  if(n>=1)return n.toFixed(3);
+  if(n>=0.1)return n.toFixed(4);
+  return n.toFixed(6);
+}
+
+/* ====== 基礎指標 ====== */
 function ema(vals,p){const k=2/(p+1);let e=vals.slice(0,p).reduce((a,b)=>a+b,0)/p;const out=new Array(vals.length).fill(null);out[p-1]=e;for(let i=p;i<vals.length;i++){e=vals[i]*k+e*(1-k);out[i]=e}return out}
 function rsi(closes,p=14){let g=0,l=0;for(let i=1;i<=p;i++){const d=closes[i]-closes[i-1];if(d>0)g+=d;else l-=d}let ag=g/p,al=l/p;for(let i=p+1;i<closes.length;i++){const d=closes[i]-closes[i-1];ag=(ag*(p-1)+(d>0?d:0))/p;al=(al*(p-1)+(d<0?-d:0))/p}if(al===0)return 100;return 100-100/(1+ag/al)}
 function atr(h,l,c,p=14){const trs=[];for(let i=1;i<c.length;i++)trs.push(Math.max(h[i]-l[i],Math.abs(h[i]-c[i-1]),Math.abs(l[i]-c[i-1])));let a=trs.slice(0,p).reduce((x,y)=>x+y,0)/p;for(let i=p;i<trs.length;i++)a=(a*(p-1)+trs[i])/p;return a}
 function adx(h,l,c,p=14){const len=c.length;if(len<p*2+2)return 0;const tr=[],pdm=[],ndm=[];for(let i=1;i<len;i++){const up=h[i]-h[i-1],dn=l[i-1]-l[i];pdm.push(up>dn&&up>0?up:0);ndm.push(dn>up&&dn>0?dn:0);tr.push(Math.max(h[i]-l[i],Math.abs(h[i]-c[i-1]),Math.abs(l[i]-c[i-1])))}let trW=tr.slice(0,p).reduce((a,b)=>a+b,0),pW=pdm.slice(0,p).reduce((a,b)=>a+b,0),nW=ndm.slice(0,p).reduce((a,b)=>a+b,0);const dxs=[];for(let i=p;i<tr.length;i++){trW=trW-trW/p+tr[i];pW=pW-pW/p+pdm[i];nW=nW-nW/p+ndm[i];const pdi=100*pW/trW,ndi=100*nW/trW;dxs.push(100*Math.abs(pdi-ndi)/(pdi+ndi||1))}let a=dxs.slice(0,p).reduce((x,y)=>x+y,0)/p;for(let i=p;i<dxs.length;i++)a=(a*(p-1)+dxs[i])/p;return a}
 function macdHist(closes){const e12=ema(closes,12),e26=ema(closes,26);const line=closes.map((_,i)=>(e12[i]!=null&&e26[i]!=null)?e12[i]-e26[i]:null).filter(v=>v!=null);const sig=ema(line,9);return line[line.length-1]-sig[sig.length-1]}
-function detectFVG(o,h,l,c,lookback=50){const len=c.length;let bullFVG=null,bearFVG=null;const start=Math.max(0,len-lookback);for(let i=start+2;i<len;i++){if(h[i-2]<l[i]&&!bullFVG)bullFVG={top:l[i],bottom:h[i-2],mid:(l[i]+h[i-2])/2,idx:i};if(l[i-2]>h[i]&&!bearFVG)bearFVG={top:l[i-2],bottom:h[i],mid:(l[i-2]+h[i])/2,idx:i}}return{bullFVG,bearFVG}}
-function detectOB(o,h,l,c,lookback=60){const len=c.length;let bullOB=null,bearOB=null;const start=Math.max(1,len-lookback);for(let i=start;i<len-2;i++){const isBear=c[i]<o[i],isNextBull=c[i+1]>o[i+1]&&c[i+2]>o[i+2];if(isBear&&isNextBull&&!bullOB)bullOB={top:h[i],bottom:l[i],mid:(h[i]+l[i])/2,idx:i};const isBull=c[i]>o[i],isNextBear=c[i+1]<o[i+1]&&c[i+2]<o[i+2];if(isBull&&isNextBear&&!bearOB)bearOB={top:h[i],bottom:l[i],mid:(h[i]+l[i])/2,idx:i}}return{bullOB,bearOB}}
-function detectStructure(h,l,c,lookback=40){const len=c.length;const start=Math.max(5,len-lookback);const swHigh=[],swLow=[];for(let i=start+3;i<len-3;i++){let isH=true,isL=true;for(let j=i-3;j<=i+3;j++){if(j!==i){if(h[j]>=h[i])isH=false;if(l[j]<=l[i])isL=false}}if(isH)swHigh.push({i,p:h[i]});if(isL)swLow.push({i,p:l[i]})}let bos='wait',choch=false;if(swHigh.length>=2&&swLow.length>=2){const lastH=swHigh[swHigh.length-1],prevH=swHigh[swHigh.length-2],lastL=swLow[swLow.length-1],prevL=swLow[swLow.length-2];const hh=lastH.p>prevH.p,hl=lastL.p>prevL.p,lh=lastH.p<prevH.p,ll=lastL.p<prevL.p;if(hh&&hl)bos='long';else if(lh&&ll)bos='short';if(bos==='long'&&lastL.p>prevL.p&&lastH.i>lastL.i)choch=true;if(bos==='short'&&lastH.p<prevH.p&&lastL.i>lastH.i)choch=true}const recent20h=Math.max(...h.slice(-20)),recent20l=Math.min(...l.slice(-20));return{bos,choch,swHigh,swLow,recent20h,recent20l}}
-function smcAnalyze(d){const{o,h,l,c}=d;const len=c.length;const price=c[len-1];const struct=detectStructure(h,l,c);const{bullFVG,bearFVG}=detectFVG(o,h,l,c);const{bullOB,bearOB}=detectOB(o,h,l,c);const e20=ema(c,20).pop(),e50=ema(c,50).pop(),e200=ema(c,200).pop();const rsiV=rsi(c),atrV=atr(h,l,c),adxV=adx(h,l,c),macdV=macdHist(c);const moUp=rsiV>48&&macdV>0,moDn=rsiV<52&&macdV<0;let dir='wait',entry=null,sl=null,tp1=null,tp2=null,reason='',bosOk=false,fvgOk=false,obOk=false,moOk=false;if(struct.bos==='long'){bosOk=true;if(bullFVG&&price>=bullFVG.bottom*0.999&&price<=bullFVG.top*1.01)fvgOk=true;if(bullOB&&price>=bullOB.bottom*0.998&&price<=bullOB.top*1.015)obOk=true;if(moUp)moOk=true;if(bosOk&&(fvgOk||obOk)&&moOk){dir='long';const fvgEntry=bullFVG?bullFVG.mid:null,obEntry=bullOB?bullOB.mid:null;entry=fvgEntry||obEntry||price;const rawSLlong=bullOB?bullOB.bottom:bullFVG?bullFVG.bottom:entry-1.5*atrV;sl=Math.min(rawSLlong,entry)*0.999;const risk=Math.max(entry-sl,atrV*0.5);tp1=entry+risk;tp2=entry+risk*1.5;reason=`BOS 多頭${struct.choch?' (CHoCH)':''}${fvgOk?' + FVG':''}${obOk?' + OB':''}`}}if(struct.bos==='short'&&dir==='wait'){bosOk=true;if(bearFVG&&price<=bearFVG.top*1.001&&price>=bearFVG.bottom*0.99)fvgOk=true;if(bearOB&&price<=bearOB.top*1.002&&price>=bearOB.bottom*0.985)obOk=true;if(moDn)moOk=true;if(bosOk&&(fvgOk||obOk)&&moOk){dir='short';const fvgEntry=bearFVG?bearFVG.mid:null,obEntry=bearOB?bearOB.mid:null;entry=fvgEntry||obEntry||price;const rawSLshort=bearFVG?bearFVG.top:bearOB?bearOB.top:entry+1.5*atrV;sl=Math.max(rawSLshort,entry)*1.002;const risk=Math.max(sl-entry,atrV*0.5);tp1=entry-risk;tp2=entry-risk*1.5;reason=`BOS 空頭${struct.choch?' (CHoCH)':''}${fvgOk?' + FVG':''}${obOk?' + OB':''}`}}if(dir==='wait')bosOk=struct.bos!=='wait';return{dir,entry:entry||price,sl,tp1,tp2,reason,struct,bullFVG,bearFVG,bullOB,bearOB,e20,e50,e200,rsi:rsiV,atr:atrV,adx:adxV,macd:macdV,moUp,moDn,bosOk,fvgOk,obOk,moOk,price}}
+
+/* ====== SMC 核心函數 ====== */
+
+// 偵測 FVG（Fair Value Gap）
+function detectFVG(o,h,l,c,lookback=50){
+  const len=c.length;
+  let bullFVG=null,bearFVG=null;
+  const start=Math.max(0,len-lookback);
+  for(let i=start+2;i<len;i++){
+    // 多頭 FVG：K1高 < K3低，有上升缺口
+    if(h[i-2]<l[i]&&!bullFVG){
+      bullFVG={top:l[i],bottom:h[i-2],mid:(l[i]+h[i-2])/2,idx:i};
+    }
+    // 空頭 FVG：K1低 > K3高，有下降缺口
+    if(l[i-2]>h[i]&&!bearFVG){
+      bearFVG={top:l[i-2],bottom:h[i],mid:(l[i-2]+h[i])/2,idx:i};
+    }
+  }
+  return{bullFVG,bearFVG};
+}
+
+// 偵測 Order Block
+function detectOB(o,h,l,c,lookback=60){
+  const len=c.length;
+  let bullOB=null,bearOB=null;
+  const start=Math.max(1,len-lookback);
+  for(let i=start;i<len-2;i++){
+    const isBear=c[i]<o[i]; // 這根是空頭K
+    const isNextBull=c[i+1]>o[i+1]&&c[i+2]>o[i+2]; // 後面是多頭衝動
+    if(isBear&&isNextBull&&!bullOB){
+      // 多頭 OB：空頭K之前是買方OB
+      bullOB={top:h[i],bottom:l[i],mid:(h[i]+l[i])/2,idx:i};
+    }
+    const isBull=c[i]>o[i]; // 這根是多頭K
+    const isNextBear=c[i+1]<o[i+1]&&c[i+2]<o[i+2]; // 後面是空頭衝動
+    if(isBull&&isNextBear&&!bearOB){
+      // 空頭 OB：多頭K之後是賣方OB
+      bearOB={top:h[i],bottom:l[i],mid:(h[i]+l[i])/2,idx:i};
+    }
+  }
+  return{bullOB,bearOB};
+}
+
+// 偵測 BOS / CHoCH（市場結構）
+function detectStructure(h,l,c,lookback=40){
+  const len=c.length;
+  const start=Math.max(5,len-lookback);
+  
+  // 找擺動高低點
+  const swHigh=[],swLow=[];
+  for(let i=start+3;i<len-3;i++){
+    let isH=true,isL=true;
+    for(let j=i-3;j<=i+3;j++){
+      if(j!==i){
+        if(h[j]>=h[i])isH=false;
+        if(l[j]<=l[i])isL=false;
+      }
+    }
+    if(isH)swHigh.push({i,p:h[i]});
+    if(isL)swLow.push({i,p:l[i]});
+  }
+  
+  const price=c[len-1];
+  let bos='wait',choch=false;
+  
+  if(swHigh.length>=2&&swLow.length>=2){
+    const lastH=swHigh[swHigh.length-1],prevH=swHigh[swHigh.length-2];
+    const lastL=swLow[swLow.length-1],prevL=swLow[swLow.length-2];
+    
+    const hh=lastH.p>prevH.p; // Higher High
+    const hl=lastL.p>prevL.p; // Higher Low
+    const lh=lastH.p<prevH.p; // Lower High
+    const ll=lastL.p<prevL.p; // Lower Low
+    
+    // BOS 確認
+    if(hh&&hl)bos='long';
+    else if(lh&&ll)bos='short';
+    
+    // CHoCH：方向剛轉
+    if(bos==='long'&&lastL.p>prevL.p&&lastH.i>lastL.i)choch=true;
+    if(bos==='short'&&lastH.p<prevH.p&&lastL.i>lastH.i)choch=true;
+  }
+  
+  // 流動性目標（最近高低點）
+  const recent20h=Math.max(...h.slice(-20));
+  const recent20l=Math.min(...l.slice(-20));
+  
+  return{bos,choch,swHigh,swLow,recent20h,recent20l};
+}
+
+/* ====== 綜合 SMC 分析 ====== */
+function smcAnalyze(d){
+  const {o,h,l,c}=d;
+  const len=c.length;
+  const price=c[len-1];
+  
+  const struct=detectStructure(h,l,c);
+  const {bullFVG,bearFVG}=detectFVG(o,h,l,c);
+  const {bullOB,bearOB}=detectOB(o,h,l,c);
+  
+  // 基礎指標
+  const e20=ema(c,20).pop(),e50=ema(c,50).pop(),e200=ema(c,200).pop();
+  const rsiV=rsi(c),atrV=atr(h,l,c),adxV=adx(h,l,c),macdV=macdHist(c);
+  const moUp=rsiV>48&&macdV>0,moDn=rsiV<52&&macdV<0;
+  
+  // SMC 做多條件
+  let dir='wait',entry=null,sl=null,tp1=null,tp2=null,reason='',
+      bosOk=false,fvgOk=false,obOk=false,moOk=false;
+  
+  if(struct.bos==='long'){
+    bosOk=true;
+    if(bullFVG&&price>=bullFVG.bottom*0.999&&price<=bullFVG.top*1.01)fvgOk=true;
+    if(bullOB&&price>=bullOB.bottom*0.998&&price<=bullOB.top*1.015)obOk=true;
+    if(moUp)moOk=true;
+    
+    if(bosOk&&(fvgOk||obOk)&&moOk){
+      dir='long';
+      // 進場：FVG 中點或 OB 中點，取較近的
+      const fvgEntry=bullFVG?bullFVG.mid:null;
+      const obEntry=bullOB?bullOB.mid:null;
+      entry=fvgEntry||obEntry||price;
+      // 止損：OB 下方或 FVG 下方
+      const rawSLlong=bullOB?bullOB.bottom:bullFVG?bullFVG.bottom:entry-1.5*atrV;
+      sl=Math.min(rawSLlong,entry)*0.999;
+      const risk=Math.max(entry-sl,atrV*0.5);
+      tp1=entry+risk;
+      tp2=entry+risk*1.5;
+      reason=`BOS 多頭${struct.choch?' (CHoCH剛轉)':''}${fvgOk?' + FVG支撐':''}${obOk?' + OB確認':''}`;
+    }
+  }
+  
+  if(struct.bos==='short'&&dir==='wait'){
+    bosOk=true;
+    if(bearFVG&&price<=bearFVG.top*1.001&&price>=bearFVG.bottom*0.99)fvgOk=true;
+    if(bearOB&&price<=bearOB.top*1.002&&price>=bearOB.bottom*0.985)obOk=true;
+    if(moDn)moOk=true;
+    
+    if(bosOk&&(fvgOk||obOk)&&moOk){
+      dir='short';
+      const fvgEntry=bearFVG?bearFVG.mid:null;
+      const obEntry=bearOB?bearOB.mid:null;
+      entry=fvgEntry||obEntry||price;
+      const rawSLshort=bearFVG?bearFVG.top:bearOB?bearOB.top:entry+1.5*atrV;
+      sl=Math.max(rawSLshort,entry)*1.002;
+      const risk=Math.max(sl-entry,atrV*0.5);
+      tp1=entry-risk;
+      tp2=entry-risk*1.5;
+      reason=`BOS 空頭${struct.choch?' (CHoCH剛轉)':''}${fvgOk?' + FVG壓力':''}${obOk?' + OB確認':''}`;
+    }else if(bosOk){
+      bosOk=true; // 結構對但條件未齊
+    }
+  }
+  
+  // 觀望時也顯示BOS方向
+  if(dir==='wait'){
+    bosOk=struct.bos!=='wait';
+  }
+  
+  return{
+    dir,entry:entry||price,sl,tp1,tp2,reason,
+    struct,bullFVG,bearFVG,bullOB,bearOB,
+    e20,e50,e200,rsi:rsiV,atr:atrV,adx:adxV,macd:macdV,
+    moUp,moDn,bosOk,fvgOk,obOk,moOk,price
+  };
+}
+
+/* ====== 行情（先試 Bitunix，失敗用幣安）====== */
 let dataSource='';
-async function klines(sym,tf,limit=300){try{const ctrl=new AbortController();setTimeout(()=>ctrl.abort(),5000);const r=await fetch(`https://fapi.bitunix.com/api/v1/futures/market/kline?symbol=${sym}&interval=${tf}&limit=${limit}`,{signal:ctrl.signal});if(!r.ok)throw new Error('Bitunix HTTP '+r.status);const json=await r.json();if(json.code!==0)throw new Error('Bitunix API錯誤');const raw=json.data;dataSource='🟢 Bitunix';return{o:raw.map(k=>+k.open),h:raw.map(k=>+k.high),l:raw.map(k=>+k.low),c:raw.map(k=>+k.close)}}catch(e){console.log('Bitunix 失敗，改用幣安:',e.message);dataSource='🟡 幣安（Bitunix 不可用）';const r=await fetch(`https://fapi.binance.com/fapi/v1/klines?symbol=${sym}&interval=${tf}&limit=${limit}`);if(!r.ok)throw new Error('行情載入失敗');const raw=await r.json();return{o:raw.map(k=>+k[1]),h:raw.map(k=>+k[2]),l:raw.map(k=>+k[3]),c:raw.map(k=>+k[4])}}}
-function renderMain(an){const d=state.data;const c=d.c,prev=c[c.length-2];const pct=(an.price-prev)/prev*100;$('price').textContent=fmt(an.price);$('price').className='price num '+(pct>=0?'up':'down');$('chg').textContent=(pct>=0?'+':'')+pct.toFixed(2)+'%';$('chg').className='chg num '+(pct>=0?'up':'down');$('updated').textContent='更新 '+new Date().toLocaleTimeString('zh-TW')+' | 數據來源: '+dataSource;$('iRsi').textContent=an.rsi.toFixed(1);$('iAdx').textContent=an.adx.toFixed(1);$('iAtr').textContent=fmt(an.atr);$('iE20').textContent=fmt(an.e20);$('iE50').textContent=fmt(an.e50);$('iE200').textContent=fmt(an.e200);const tagsEl=$('smcTags');tagsEl.innerHTML='';const{struct,bullFVG,bearFVG,bullOB,bearOB}=an;if(struct.bos==='long')tagsEl.innerHTML+=`<span class="smc-tag bos-long">📈 BOS 多頭${struct.choch?' CHoCH':''}</span>`;else if(struct.bos==='short')tagsEl.innerHTML+=`<span class="smc-tag bos-short">📉 BOS 空頭${struct.choch?' CHoCH':''}</span>`;else tagsEl.innerHTML+=`<span class="smc-tag none">⚓ 結構未定</span>`;if(bullFVG)tagsEl.innerHTML+=`<span class="smc-tag fvg-bull">FVG🟩 ${fmt(bullFVG.bottom)}–${fmt(bullFVG.top)}</span>`;if(bearFVG)tagsEl.innerHTML+=`<span class="smc-tag fvg-bear">FVG🟥 ${fmt(bearFVG.bottom)}–${fmt(bearFVG.top)}</span>`;if(bullOB)tagsEl.innerHTML+=`<span class="smc-tag ob-bull">OB🔲 ${fmt(bullOB.bottom)}–${fmt(bullOB.top)}</span>`;if(bearOB)tagsEl.innerHTML+=`<span class="smc-tag ob-bear">OB🔳 ${fmt(bearOB.bottom)}–${fmt(bearOB.top)}</span>`;const zbar=$('zoneBar');if(bullOB||bearOB||bullFVG||bearFVG){zbar.style.display='block';const ob=struct.bos==='long'?bullOB:bearOB;const fvg=struct.bos==='long'?bullFVG:bearFVG;$('zOB').textContent=ob?`${fmt(ob.bottom)} – ${fmt(ob.top)}`:'未偵測';$('zOB').style.color=ob?(struct.bos==='long'?'var(--gold)':'var(--pink)'):'var(--dim)';$('zFVG').textContent=fvg?`${fmt(fvg.bottom)} – ${fmt(fvg.top)}`:'未偵測';$('zFVG').style.color=fvg?(struct.bos==='long'?'var(--green)':'var(--red)'):'var(--dim)';$('zLiq').textContent=struct.bos==='long'?fmt(struct.recent20h):struct.bos==='short'?fmt(struct.recent20l):'--'}$('l1').textContent=struct.bos==='long'?'🟢':struct.bos==='short'?'🔴':'⚪';$('l1d').textContent=struct.bos==='long'?'多頭 HH+HL 結構確認':struct.bos==='short'?'空頭 LH+LL 結構確認':'結構未定，等突破';$('l2').textContent=an.fvgOk?'🟢':'⚪';$('l2d').textContent=an.fvgOk?'價格位於 FVG 不平衡區':(bullFVG||bearFVG)?'FVG 存在但價格未回踩':'未偵測到有效 FVG';$('l3').textContent=an.obOk?'🟢':'⚪';$('l3d').textContent=an.obOk?'OB 支撐/壓力有效':(bullOB||bearOB)?'OB 存在但價格未到達':'未偵測到有效 OB';$('l4').textContent=an.moUp?'🟢':an.moDn?'🔴':'⚪';$('l4d').textContent=`RSI ${an.rsi.toFixed(1)}｜MACD ${an.macd>0?'翻紅':'翻綠'}`;const tag=$('biasTag'),why=$('biasWhy');if(an.dir==='long'){tag.textContent='🚀 做多';tag.className='tag long blink';why.textContent=an.reason||'SMC 多頭條件齊全';$('lvEntry').textContent=fmt(an.entry);$('lvSL').textContent=fmt(an.sl);$('lvTP1').textContent=fmt(an.tp1);$('lvTP2').textContent=fmt(an.tp2);$('lvEntrySub').textContent='FVG/OB 回踩點'}else if(an.dir==='short'){tag.textContent='🔨 做空';tag.className='tag short blink';why.textContent=an.reason||'SMC 空頭條件齊全';$('lvEntry').textContent=fmt(an.entry);$('lvSL').textContent=fmt(an.sl);$('lvTP1').textContent=fmt(an.tp1);$('lvTP2').textContent=fmt(an.tp2);$('lvEntrySub').textContent='FVG/OB 回踩點'}else{const bosDir=struct.bos==='long'?'多頭結構但條件未齊（等回踩FVG/OB）':struct.bos==='short'?'空頭結構但條件未齊（等反彈FVG/OB）':'結構未定，等 BOS 確認方向';tag.textContent='⚓ 觀望';tag.className='tag wait';why.textContent=bosDir;$('lvEntry').textContent='--';$('lvSL').textContent='--';$('lvTP1').textContent='--';$('lvTP2').textContent='--';$('lvEntrySub').textContent='等待條件齊全'}}
-async function renderMTF(){const body=$('mtfBody');body.innerHTML='';for(const[tf,name]of TFS){try{const d=await klines(state.symbol,tf,300);const an=smcAnalyze(d);state.mtf[name]=an;const bosStr=an.struct.bos==='long'?'<span style="color:var(--green)">多頭</span>':an.struct.bos==='short'?'<span style="color:var(--red)">空頭</span>':'<span style="color:var(--dim)">未定</span>';const fvgStr=(an.bullFVG||an.bearFVG)?'<span style="color:var(--gold)">✓</span>':'<span style="color:var(--dim)">-</span>';const vs=an.price>an.e200?'<span class="up">上方</span>':'<span class="down">下方</span>';body.insertAdjacentHTML('beforeend',`<tr><td>${name}</td><td>${bosStr}</td><td>${fvgStr}</td><td class="num">${an.rsi.toFixed(1)}</td><td>${vs}</td></tr>`)}catch(e){body.insertAdjacentHTML('beforeend',`<tr><td>${name}</td><td colspan="4" style="color:var(--dim)">載入失敗</td></tr>`)}}}
-async function refresh(){$('err').style.display='none';try{state.data=await klines(state.symbol,state.tf,300);renderMain(smcAnalyze(state.data));renderMTF()}catch(e){$('err').textContent='⚠️ 無法取得行情：'+e.message;$('err').style.display='block'}}
-function localAnalysis(an){const sym=state.symbol.replace('USDT','/USDT');const struct=an.struct;const bosText=struct.bos==='long'?'多頭 BOS（HH+HL）':struct.bos==='short'?'空頭 BOS（LH+LL）':'結構未定';const fvgText=an.bullFVG?`多頭FVG ${fmt(an.bullFVG.bottom)}–${fmt(an.bullFVG.top)}`:an.bearFVG?`空頭FVG ${fmt(an.bearFVG.bottom)}–${fmt(an.bearFVG.top)}`:'未偵測到FVG';const obText=an.bullOB?`多頭OB ${fmt(an.bullOB.bottom)}–${fmt(an.bullOB.top)}`:an.bearOB?`空頭OB ${fmt(an.bearOB.bottom)}–${fmt(an.bearOB.top)}`:'未偵測到OB';let act;if(an.dir==='long')act=`🚀 條件齊全，可考慮做多。\n進場：${fmt(an.entry)}\n止損：${fmt(an.sl)}\nTP1：${fmt(an.tp1)}（1:1）｜TP2：${fmt(an.tp2)}（1:1.5）\n建議等回踩 FVG/OB 區間確認後再進，不追高。`;else if(an.dir==='short')act=`🔨 條件齊全，可考慮做空。\n進場：${fmt(an.entry)}\n止損：${fmt(an.sl)}\nTP1：${fmt(an.tp1)}（1:1）｜TP2：${fmt(an.tp2)}（1:1.5）\n建議等反彈至 FVG/OB 區間確認後再進，不追空。`;else act=`⚓ 條件未齊全。${struct.bos!=='wait'?`\n目前 ${bosText}，等待價格回踩 ${struct.bos==='long'?'看漲FVG/OB':'看跌FVG/OB'} 且動能確認後才進場。`:'等 BOS 方向確認。'}`;return`🐆 SMC 解盤｜${sym}（${state.tf}）\n\n📊 市場結構：${bosText}${struct.choch?' [CHoCH]':''}\n📊 FVG：${fvgText}\n🔲 OB：${obText}\n⚡ RSI：${an.rsi.toFixed(1)}｜MACD：${an.macd>0?'偏多':'偏空'}｜ADX：${an.adx.toFixed(1)}\n\n${act}\n\n⚠️ 合約有槓桿，單筆風險控制在本金 1–2%，止損掛了就不動。`}
-$('aiBtn').addEventListener('click',async()=>{if(!state.data)return;const btn=$('aiBtn'),out=$('aiOut');btn.disabled=true;out.className='ai-out show';out.innerHTML='<span class="loading blink">🐆 獵豹鎖定目標，SMC解盤中…</span>';const an=smcAnalyze(state.data);const key=$('apiKey').value.trim();const mtfSummary=Object.entries(state.mtf).map(([k,v])=>`${k}:${v.struct.bos==='long'?'多頭':v.struct.bos==='short'?'空頭':'未定'}(FVG:${v.bullFVG||v.bearFVG?'有':'無'})`).join('；');const prompt=`你是翔懂團隊的 SMC/ICT 量化分析師，用繁體中文，200字內給出 SMC 角度的操作建議。\n幣種：${state.symbol} 週期：${state.tf} 現價：${an.price}\n市場結構：${an.struct.bos==='long'?'多頭BOS':an.struct.bos==='short'?'空頭BOS':'未定'}${an.struct.choch?' CHoCH':''}\nFVG：${an.bullFVG?`看漲${fmt(an.bullFVG.bottom)}-${fmt(an.bullFVG.top)}`:an.bearFVG?`看跌${fmt(an.bearFVG.bottom)}-${fmt(an.bearFVG.top)}`:'無'}\nOB：${an.bullOB?`看漲${fmt(an.bullOB.bottom)}-${fmt(an.bullOB.top)}`:an.bearOB?`看跌${fmt(an.bearOB.bottom)}-${fmt(an.bearOB.top)}`:'無'}\nRSI：${an.rsi.toFixed(1)} MACD：${an.macd>0?'正':'負'} ADX：${an.adx.toFixed(1)}\n方向判定：${an.dir==='long'?'做多':an.dir==='short'?'做空':'觀望'}\n多週期：${mtfSummary}`;try{const headers={'Content-Type':'application/json'};if(key){headers['x-api-key']=key;headers['anthropic-version']='2023-06-01';headers['anthropic-dangerous-direct-browser-access']='true';}const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers,body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:1000,messages:[{role:'user',content:prompt}]})});if(!r.ok)throw new Error('');const data=await r.json();const text=(data.content||[]).map(i=>i.text||'').join('\n').trim();if(!text)throw new Error('');out.textContent='🤖 Claude SMC 解盤\n\n'+text}catch(e){out.textContent=localAnalysis(an)}btn.disabled=false});
+async function klines(sym,tf,limit=300){
+  try{
+    const ctrl=new AbortController();
+    setTimeout(()=>ctrl.abort(),5000);
+    const r=await fetch(`https://fapi.bitunix.com/api/v1/futures/market/kline?symbol=${sym}&interval=${tf}&limit=${limit}`,{signal:ctrl.signal});
+    if(!r.ok)throw new Error('Bitunix HTTP '+r.status);
+    const json=await r.json();
+    if(json.code!==0)throw new Error('Bitunix API錯誤');
+    const raw=json.data;
+    dataSource='🟢 Bitunix';
+    return{o:raw.map(k=>+k.open),h:raw.map(k=>+k.high),l:raw.map(k=>+k.low),c:raw.map(k=>+k.close)};
+  }catch(e){
+    console.log('Bitunix 失敗，改用幣安:',e.message);
+    dataSource='🟡 幣安（Bitunix 不可用）';
+    const r=await fetch(`https://fapi.binance.com/fapi/v1/klines?symbol=${sym}&interval=${tf}&limit=${limit}`);
+    if(!r.ok)throw new Error('行情載入失敗');
+    const raw=await r.json();
+    return{o:raw.map(k=>+k[1]),h:raw.map(k=>+k[2]),l:raw.map(k=>+k[3]),c:raw.map(k=>+k[4])};
+  }
+}
+
+/* ====== 渲染 ====== */
+function renderMain(an){
+  const d=state.data;
+  const c=d.c,prev=c[c.length-2];
+  const pct=(an.price-prev)/prev*100;
+  $('price').textContent=fmt(an.price);
+  $('price').className='price num '+(pct>=0?'up':'down');
+  $('chg').textContent=(pct>=0?'+':'')+pct.toFixed(2)+'%';
+  $('chg').className='chg num '+(pct>=0?'up':'down');
+  $('updated').textContent='更新 '+new Date().toLocaleTimeString('zh-TW')+' | 數據來源: '+dataSource;
+  
+  // 指標
+  $('iRsi').textContent=an.rsi.toFixed(1);
+  $('iAdx').textContent=an.adx.toFixed(1);
+  $('iAtr').textContent=fmt(an.atr);
+  $('iE20').textContent=fmt(an.e20);
+  $('iE50').textContent=fmt(an.e50);
+  $('iE200').textContent=fmt(an.e200);
+  
+  // SMC 標籤
+  const tagsEl=$('smcTags');
+  tagsEl.innerHTML='';
+  const {struct,bullFVG,bearFVG,bullOB,bearOB}=an;
+  
+  // BOS 標籤
+  if(struct.bos==='long'){
+    tagsEl.innerHTML+=`<span class="smc-tag bos-long">📈 BOS 多頭${struct.choch?' CHoCH':''}</span>`;
+  }else if(struct.bos==='short'){
+    tagsEl.innerHTML+=`<span class="smc-tag bos-short">📉 BOS 空頭${struct.choch?' CHoCH':''}</span>`;
+  }else{
+    tagsEl.innerHTML+=`<span class="smc-tag none">⚓ 結構未定</span>`;
+  }
+  
+  // FVG 標籤
+  if(bullFVG)tagsEl.innerHTML+=`<span class="smc-tag fvg-bull">FVG🟩 ${fmt(bullFVG.bottom)}–${fmt(bullFVG.top)}</span>`;
+  if(bearFVG)tagsEl.innerHTML+=`<span class="smc-tag fvg-bear">FVG🟥 ${fmt(bearFVG.bottom)}–${fmt(bearFVG.top)}</span>`;
+  
+  // OB 標籤
+  if(bullOB)tagsEl.innerHTML+=`<span class="smc-tag ob-bull">OB🔲 ${fmt(bullOB.bottom)}–${fmt(bullOB.top)}</span>`;
+  if(bearOB)tagsEl.innerHTML+=`<span class="smc-tag ob-bear">OB🔳 ${fmt(bearOB.bottom)}–${fmt(bearOB.top)}</span>`;
+  
+  // Zone Bar
+  const zbar=$('zoneBar');
+  if(bullOB||bearOB||bullFVG||bearFVG){
+    zbar.style.display='block';
+    const ob=struct.bos==='long'?bullOB:bearOB;
+    const fvg=struct.bos==='long'?bullFVG:bearFVG;
+    $('zOB').textContent=ob?`${fmt(ob.bottom)} – ${fmt(ob.top)}`:'未偵測';
+    $('zOB').style.color=ob?(struct.bos==='long'?'var(--gold)':'var(--pink)'):'var(--dim)';
+    $('zFVG').textContent=fvg?`${fmt(fvg.bottom)} – ${fmt(fvg.top)}`:'未偵測';
+    $('zFVG').style.color=fvg?(struct.bos==='long'?'var(--green)':'var(--red)'):'var(--dim)';
+    $('zLiq').textContent=struct.bos==='long'?fmt(struct.recent20h):struct.bos==='short'?fmt(struct.recent20l):'--';
+  }
+  
+  // 紅綠燈
+  $('l1').textContent=struct.bos==='long'?'🟢':struct.bos==='short'?'🔴':'⚪';
+  $('l1d').textContent=struct.bos==='long'?'多頭 HH+HL 結構確認':struct.bos==='short'?'空頭 LH+LL 結構確認':'結構未定，等突破';
+  $('l2').textContent=an.fvgOk?'🟢':(bullFVG||bearFVG)?'⚪':'⚪';
+  $('l2d').textContent=an.fvgOk?'價格位於 FVG 不平衡區':(bullFVG||bearFVG)?'FVG 存在但價格未回踩':'未偵測到有效 FVG';
+  $('l3').textContent=an.obOk?'🟢':(bullOB||bearOB)?'⚪':'⚪';
+  $('l3d').textContent=an.obOk?'OB 支撐/壓力有效':(bullOB||bearOB)?'OB 存在但價格未到達':'未偵測到有效 OB';
+  $('l4').textContent=an.moUp?'🟢':an.moDn?'🔴':'⚪';
+  $('l4d').textContent=`RSI ${an.rsi.toFixed(1)}｜MACD ${an.macd>0?'翻紅':'翻綠'}`;
+  
+  // 偏向標籤
+  const tag=$('biasTag'),why=$('biasWhy');
+  if(an.dir==='long'){
+    tag.textContent='🚀 做多';tag.className='tag long blink';
+    why.textContent=an.reason||'SMC 多頭條件齊全';
+    $('lvEntry').textContent=fmt(an.entry);
+    $('lvSL').textContent=fmt(an.sl);
+    $('lvTP1').textContent=fmt(an.tp1);
+    $('lvTP2').textContent=fmt(an.tp2);
+    $('lvEntrySub').textContent='FVG/OB 回踩點';
+  }else if(an.dir==='short'){
+    tag.textContent='🔨 做空';tag.className='tag short blink';
+    why.textContent=an.reason||'SMC 空頭條件齊全';
+    $('lvEntry').textContent=fmt(an.entry);
+    $('lvSL').textContent=fmt(an.sl);
+    $('lvTP1').textContent=fmt(an.tp1);
+    $('lvTP2').textContent=fmt(an.tp2);
+    $('lvEntrySub').textContent='FVG/OB 回踩點';
+  }else{
+    const bosDir=struct.bos==='long'?'多頭結構但條件未齊（等回踩FVG/OB）':struct.bos==='short'?'空頭結構但條件未齊（等反彈FVG/OB）':'結構未定，等 BOS 確認方向';
+    tag.textContent='⚓ 觀望';tag.className='tag wait';
+    why.textContent=bosDir;
+    $('lvEntry').textContent='--';$('lvSL').textContent='--';
+    $('lvTP1').textContent='--';$('lvTP2').textContent='--';
+    $('lvEntrySub').textContent='等待條件齊全';
+  }
+}
+
+async function renderMTF(){
+  const body=$('mtfBody');body.innerHTML='';
+  for(const[tf,name]of TFS){
+    try{
+      const d=await klines(state.symbol,tf,300);
+      const an=smcAnalyze(d);state.mtf[name]=an;
+      const pill=an.dir==='long'?'<span class="pill long">🚀 做多</span>':an.dir==='short'?'<span class="pill short">🔨 做空</span>':'<span class="pill wait">⚓ 觀望</span>';
+      const bosStr=an.struct.bos==='long'?'<span style="color:var(--green)">多頭</span>':an.struct.bos==='short'?'<span style="color:var(--red)">空頭</span>':'<span style="color:var(--dim)">未定</span>';
+      const fvgStr=(an.bullFVG||an.bearFVG)?'<span style="color:var(--gold)">✓</span>':'<span style="color:var(--dim)">-</span>';
+      const vs=an.price>an.e200?'<span class="up">上方</span>':'<span class="down">下方</span>';
+      body.insertAdjacentHTML('beforeend',`<tr><td>${name}</td><td>${bosStr}</td><td>${fvgStr}</td><td class="num">${an.rsi.toFixed(1)}</td><td>${vs}</td></tr>`);
+    }catch(e){
+      body.insertAdjacentHTML('beforeend',`<tr><td>${name}</td><td colspan="4" style="color:var(--dim)">載入失敗</td></tr>`);
+    }
+  }
+}
+
+async function refresh(){
+  $('err').style.display='none';
+  try{
+    state.data=await klines(state.symbol,state.tf,300);
+    renderMain(smcAnalyze(state.data));
+    renderMTF();
+  }catch(e){
+    $('err').textContent='⚠️ 無法取得行情：'+e.message;
+    $('err').style.display='block';
+  }
+}
+
+/* ====== AI 解盤 ====== */
+function localAnalysis(an){
+  const sym=state.symbol.replace('USDT','/USDT');
+  const struct=an.struct;
+  const bosText=struct.bos==='long'?'多頭 BOS（HH+HL）':struct.bos==='short'?'空頭 BOS（LH+LL）':'結構未定';
+  const fvgText=an.bullFVG?`多頭FVG ${fmt(an.bullFVG.bottom)}–${fmt(an.bullFVG.top)}`:an.bearFVG?`空頭FVG ${fmt(an.bearFVG.bottom)}–${fmt(an.bearFVG.top)}`:'未偵測到FVG';
+  const obText=an.bullOB?`多頭OB ${fmt(an.bullOB.bottom)}–${fmt(an.bullOB.top)}`:an.bearOB?`空頭OB ${fmt(an.bearOB.bottom)}–${fmt(an.bearOB.top)}`:'未偵測到OB';
+  let act;
+  if(an.dir==='long')act=`🚀 條件齊全，可考慮做多。\n進場：${fmt(an.entry)}\n止損：${fmt(an.sl)}\nTP1：${fmt(an.tp1)}（1:1）｜TP2：${fmt(an.tp2)}（1:1.5）\n建議等回踩 FVG/OB 區間確認後再進，不追高。`;
+  else if(an.dir==='short')act=`🔨 條件齊全，可考慮做空。\n進場：${fmt(an.entry)}\n止損：${fmt(an.sl)}\nTP1：${fmt(an.tp1)}（1:1）｜TP2：${fmt(an.tp2)}（1:1.5）\n建議等反彈至 FVG/OB 區間確認後再進，不追空。`;
+  else act=`⚓ 條件未齊全。${struct.bos!=='wait'?`\n目前 ${bosText}，等待價格回踩 ${struct.bos==='long'?'看漲FVG/OB':'看跌FVG/OB'} 且動能確認後才進場。`:'等 BOS 方向確認。'}`;
+  return`🐆 SMC 解盤｜${sym}（${state.tf}）\n\n📊 市場結構：${bosText}${struct.choch?' [CHoCH]':''}\n📊 FVG：${fvgText}\n🔲 OB：${obText}\n⚡ RSI：${an.rsi.toFixed(1)}｜MACD：${an.macd>0?'偏多':'偏空'}｜ADX：${an.adx.toFixed(1)}\n\n${act}\n\n⚠️ 合約有槓桿，單筆風險控制在本金 1–2%，止損掛了就不動。`;
+}
+
+$('aiBtn').addEventListener('click',async()=>{
+  if(!state.data)return;
+  const btn=$('aiBtn'),out=$('aiOut');
+  btn.disabled=true;out.className='ai-out show';
+  out.innerHTML='<span class="loading blink">🐆 獵豹鎖定目標，SMC解盤中…</span>';
+  const an=smcAnalyze(state.data);
+  const key=$('apiKey').value.trim();
+  const mtfSummary=Object.entries(state.mtf).map(([k,v])=>`${k}:${v.struct.bos==='long'?'多頭':v.struct.bos==='short'?'空頭':'未定'}(FVG:${v.bullFVG||v.bearFVG?'有':'無'})`).join('；');
+  const prompt=`你是翔懂團隊的 SMC/ICT 量化分析師，用繁體中文，200字內給出 SMC 角度的操作建議。
+幣種：${state.symbol} 週期：${state.tf} 現價：${an.price}
+市場結構：${an.struct.bos==='long'?'多頭BOS':an.struct.bos==='short'?'空頭BOS':'未定'}${an.struct.choch?' CHoCH':''}
+FVG：${an.bullFVG?`看漲${fmt(an.bullFVG.bottom)}-${fmt(an.bullFVG.top)}`:an.bearFVG?`看跌${fmt(an.bearFVG.bottom)}-${fmt(an.bearFVG.top)}`:'無'}
+OB：${an.bullOB?`看漲${fmt(an.bullOB.bottom)}-${fmt(an.bullOB.top)}`:an.bearOB?`看跌${fmt(an.bearOB.bottom)}-${fmt(an.bearOB.top)}`:'無'}
+RSI：${an.rsi.toFixed(1)} MACD：${an.macd>0?'正':'負'} ADX：${an.adx.toFixed(1)}
+方向判定：${an.dir==='long'?'做多':an.dir==='short'?'做空':'觀望'}
+多週期：${mtfSummary}`;
+  try{
+    const headers={'Content-Type':'application/json'};
+    if(key){headers['x-api-key']=key;headers['anthropic-version']='2023-06-01';headers['anthropic-dangerous-direct-browser-access']='true';}
+    const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers,body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:1000,messages:[{role:'user',content:prompt}]})});
+    if(!r.ok)throw new Error('');
+    const data=await r.json();
+    const text=(data.content||[]).map(i=>i.text||'').join('\n').trim();
+    if(!text)throw new Error('');
+    out.textContent='🤖 Claude SMC 解盤\n\n'+text;
+  }catch(e){out.textContent=localAnalysis(an);}
+  btn.disabled=false;
+});
+
 $('refresh').addEventListener('click',refresh);
 $('symbol').addEventListener('change',e=>{state.symbol=e.target.value;refresh()});
 $('tf').addEventListener('change',e=>{state.tf=e.target.value;refresh()});
