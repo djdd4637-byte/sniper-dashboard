@@ -1,0 +1,960 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>翔董｜CryptoSniper AI 量化儀表板 • 合約版</title>
+<style>
+  :root{
+    --bg:#080810; --bg2:#0d0d18; --card:#111120; --line:#1e1e30;
+    --pink:#FF2D78; --cyan:#00D4FF; --gold:#FFD166;
+    --green:#2BD67B; --red:#FF4D4D; --grey:#7a7a8c;
+    --text:#EAEAF4; --sub:#9999b3;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{
+    background:var(--bg); color:var(--text);
+    font-family:-apple-system,"PingFang TC","Microsoft JhengHei",sans-serif;
+    -webkit-tap-highlight-color:transparent;
+    overflow-x:hidden;
+  }
+  body::before{
+    content:''; position:fixed; inset:0; z-index:0; pointer-events:none;
+    background-image:
+      linear-gradient(rgba(0,212,255,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,212,255,0.04) 1px, transparent 1px);
+    background-size:28px 28px;
+  }
+  .wrap{position:relative; z-index:1; max-width:520px; margin:0 auto; min-height:100vh; padding-bottom:90px;}
+
+  /* HEADER */
+  header{
+    display:flex; align-items:center; gap:10px; padding:14px 16px 10px;
+    border-bottom:1px solid var(--line);
+    background:linear-gradient(180deg, rgba(255,45,120,0.06), transparent);
+  }
+  .logo{
+    width:42px; height:42px; border-radius:12px; display:flex; align-items:center; justify-content:center;
+    font-size:22px; background:linear-gradient(135deg, var(--pink), #ff7eb0);
+    box-shadow:0 0 18px rgba(255,45,120,0.5);
+  }
+  .htitle{flex:1;}
+  .htitle .name{font-size:16px; font-weight:800; letter-spacing:0.5px;}
+  .htitle .sub{font-size:10px; color:var(--cyan); letter-spacing:1.5px;}
+  .live{display:flex; flex-direction:column; align-items:flex-end; gap:2px;}
+  .live .dot{display:inline-flex; align-items:center; gap:5px; font-size:10px; font-weight:700; color:var(--green);}
+  .live .dot::before{content:''; width:6px; height:6px; border-radius:50%; background:var(--green); box-shadow:0 0 8px var(--green); animation:pulse 1.4s infinite;}
+  .live .clock{font-size:11px; color:var(--sub); font-family:monospace;}
+  @keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.3;}}
+
+  /* TIMEFRAME SELECTOR */
+  .tfselect{display:flex; gap:6px; padding:10px 16px; overflow-x:auto; -webkit-overflow-scrolling:touch; border-bottom:1px solid var(--line);}
+  .tfselect::-webkit-scrollbar{display:none;}
+  .tfbtn{flex:0 0 auto; padding:7px 12px; border-radius:8px; font-size:11px; font-weight:700; background:var(--card); color:var(--sub); border:1px solid var(--line); cursor:pointer; white-space:nowrap; transition:all 0.2s;}
+  .tfbtn.active{background:linear-gradient(135deg, rgba(255,45,120,0.18), rgba(0,212,255,0.1)); color:var(--text); border-color:var(--pink);}
+  .tfbtn:hover{border-color:var(--cyan);}
+
+  .tabgrid{display:grid; grid-template-columns:repeat(3,1fr); gap:8px; padding:10px 16px;}
+  .tabgrid .tabbtn{flex:none; display:flex; flex-direction:column; align-items:center; justify-content:center;
+    text-align:center; padding:12px 4px; border-radius:12px; font-size:11px; font-weight:700; gap:4px;
+    background:var(--card); color:var(--sub); border:1px solid var(--line); cursor:pointer; white-space:nowrap;}
+  .tabgrid .tabbtn .ic{font-size:20px;}
+  .tabbtn.active{background:linear-gradient(135deg, rgba(255,45,120,0.18), rgba(0,212,255,0.1)); color:var(--text); border-color:var(--pink);}
+
+  /* MARQUEE */
+  .marquee{
+    margin:12px 16px 0; border:1px solid var(--line); border-radius:10px; background:var(--card);
+    padding:8px 12px; display:flex; gap:10px; align-items:center; overflow:hidden;
+  }
+  .marquee .tag{font-size:10px; font-weight:800; color:var(--gold); white-space:nowrap;}
+  .marquee .track{flex:1; overflow:hidden; white-space:nowrap;}
+  .marquee .track span{display:inline-block; font-size:12px; color:var(--sub); animation:scroll 22s linear infinite;}
+  @keyframes scroll{0%{transform:translateX(0);}100%{transform:translateX(-100%);}}
+
+  /* STAT BAR */
+  .statbar{display:grid; grid-template-columns:repeat(5,1fr); gap:8px; padding:12px 16px;}
+  .stat{background:var(--card); border:1px solid var(--line); border-radius:10px; padding:8px 4px; text-align:center;}
+  .stat .lbl{font-size:9px; color:var(--sub); margin-bottom:3px;}
+  .stat .val{font-size:13px; font-weight:800;}
+  .stat .val.up{color:var(--green);} .stat .val.down{color:var(--red);}
+
+  /* MARKET STATUS */
+  .mstatus{margin:0 16px 12px; border-radius:14px; padding:14px; border:1px solid var(--line);
+    background:linear-gradient(135deg, rgba(255,45,120,0.06), rgba(0,212,255,0.04));}
+  .mstatus .row1{display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;}
+  .mstatus .level{font-size:13px; font-weight:800; padding:4px 10px; border-radius:8px;}
+  .lvl-L1{background:rgba(43,214,123,0.15); color:var(--green); border:1px solid var(--green);}
+  .lvl-L2{background:rgba(255,209,102,0.15); color:var(--gold); border:1px solid var(--gold);}
+  .lvl-L3{background:rgba(255,77,77,0.15); color:var(--red); border:1px solid var(--red);}
+  .mstatus .grid3{display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; text-align:center;}
+  .mstatus .grid3 .n{font-size:18px; font-weight:800;}
+  .mstatus .grid3 .l{font-size:10px; color:var(--sub);}
+
+  /* SEARCH + SORT */
+  .toolbar{display:flex; gap:8px; padding:0 16px 10px;}
+  .search{flex:1; background:var(--card); border:1px solid var(--line); border-radius:10px; padding:9px 12px;
+    color:var(--text); font-size:13px;}
+  .search::placeholder{color:var(--sub);}
+  .sortsel{background:var(--card); border:1px solid var(--line); border-radius:10px; padding:9px 10px; color:var(--text); font-size:12px;}
+
+  /* COIN GRID */
+  .grid{display:grid; grid-template-columns:1fr 1fr; gap:10px; padding:0 16px 16px;}
+  .coin{background:var(--card); border:1px solid var(--line); border-radius:14px; padding:12px; position:relative; cursor:pointer; transition:transform .12s;}
+  .coin:active{transform:scale(0.97);}
+  .coin.haslong{border-color:rgba(43,214,123,0.5);}
+  .coin.hasshort{border-color:rgba(255,77,77,0.5);}
+  .coin .top{display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:6px;}
+  .coin .sym{font-size:14px; font-weight:800;}
+  .coin .dir{font-size:9px; font-weight:800; padding:2px 7px; border-radius:6px;}
+  .dir-long{background:rgba(43,214,123,0.15); color:var(--green);}
+  .dir-short{background:rgba(255,77,77,0.15); color:var(--red);}
+  .dir-watch{background:rgba(122,122,140,0.18); color:var(--sub);}
+  .coin .price{font-size:15px; font-weight:700; font-family:monospace;}
+  .coin .chg{font-size:11px; font-weight:700; margin-left:6px;}
+  .coin .scorebar{margin-top:8px; height:5px; background:var(--bg2); border-radius:3px; overflow:hidden;}
+  .coin .scorebar i{display:block; height:100%; border-radius:3px;}
+  .coin .scoretxt{display:flex; justify-content:space-between; margin-top:4px; font-size:10px; color:var(--sub);}
+  .coin .scoretxt b{color:var(--text); font-size:12px;}
+  .coin .futuresinfo{display:flex; justify-content:space-between; margin-top:6px; font-size:9px; color:var(--sub);}
+
+  /* LIQUIDITY FEED */
+  .section-title{display:flex; align-items:center; gap:6px; padding:4px 16px 8px; font-size:13px; font-weight:800; color:var(--cyan);}
+  .section-title .ico{font-size:14px;}
+  .liqfeed{padding:0 16px 16px; display:flex; flex-direction:column; gap:8px;}
+  .liqcard{background:var(--card); border:1px solid var(--line); border-left:3px solid var(--gold); border-radius:10px; padding:10px 12px;}
+  .liqcard .h{display:flex; justify-content:space-between; font-size:12px; font-weight:700; margin-bottom:4px;}
+  .liqcard .h .t{color:var(--sub); font-size:10px; font-weight:400;}
+  .liqcard .d{font-size:11px; color:var(--sub); line-height:1.5;}
+  .empty{padding:24px 16px; text-align:center; color:var(--sub); font-size:12px;}
+
+  /* DETAIL MODAL */
+  .modal-bg{position:fixed; inset:0; background:rgba(0,0,0,0.7); z-index:50; display:none;}
+  .modal{position:fixed; left:0; right:0; bottom:0; top:6%; z-index:51; background:var(--bg2);
+    border-radius:20px 20px 0 0; display:none; flex-direction:column; max-width:520px; margin:0 auto;
+    box-shadow:0 -10px 40px rgba(0,0,0,0.6); border-top:1px solid var(--line);}
+  .modal.open, .modal-bg.open{display:flex;}
+  .modal-bg.open{display:block;}
+  .modal-head{display:flex; align-items:center; justify-content:space-between; padding:14px 16px; border-bottom:1px solid var(--line);}
+  .modal-head .ttl{font-size:16px; font-weight:800;}
+  .modal-head .ttl small{display:block; font-size:10px; color:var(--sub); font-weight:400; margin-top:2px;}
+  .closebtn{width:32px; height:32px; border-radius:10px; background:var(--card); border:1px solid var(--line);
+    color:var(--text); font-size:15px; display:flex; align-items:center; justify-content:center;}
+  .modal-body{flex:1; overflow-y:auto; padding:14px 16px 40px; -webkit-overflow-scrolling:touch;}
+
+  .warnbanner{background:rgba(255,209,102,0.1); border:1px solid var(--gold); color:var(--gold); font-size:12px;
+    border-radius:10px; padding:10px 12px; margin-bottom:14px; line-height:1.5;}
+  .sigbanner{border-radius:10px; padding:12px; margin-bottom:14px; font-size:13px; font-weight:800; text-align:center;}
+  .sigbanner.long{background:rgba(43,214,123,0.12); border:1px solid var(--green); color:var(--green);}
+  .sigbanner.short{background:rgba(255,77,77,0.12); border:1px solid var(--red); color:var(--red);}
+
+  .levelbox{display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:14px;}
+  .lvl{background:var(--card); border:1px solid var(--line); border-radius:10px; padding:10px;}
+  .lvl .l{font-size:10px; color:var(--sub); margin-bottom:3px;}
+  .lvl .v{font-size:15px; font-weight:800; font-family:monospace;}
+  .lvl.entry .v{color:var(--cyan);} .lvl.sl .v{color:var(--red);}
+  .lvl.tp1 .v, .lvl.tp2 .v{color:var(--green);}
+
+  .explainbox{background:var(--card); border:1px solid var(--line); border-radius:12px; padding:12px 14px; margin-bottom:14px;}
+  .explainbox h4{font-size:12px; color:var(--pink); margin-bottom:8px; display:flex; gap:6px; align-items:center;}
+  .explainbox p{font-size:12.5px; color:var(--sub); line-height:1.7;}
+  .explainbox p b{color:var(--text);}
+
+  .dimrow{display:flex; justify-content:space-between; align-items:center; padding:7px 0; border-bottom:1px solid var(--line); font-size:12px;}
+  .dimrow:last-child{border-bottom:none;}
+  .dimrow .dname{color:var(--sub);}
+  .dimrow .dval{font-weight:800;}
+
+  .keylvltable{width:100%; font-size:11.5px; border-collapse:collapse; margin-top:6px;}
+  .keylvltable td{padding:6px 4px; border-bottom:1px solid var(--line);}
+  .keylvltable td:first-child{color:var(--sub);}
+  .keylvltable td:last-child{text-align:right; font-family:monospace; font-weight:700;}
+  .swept{color:var(--gold) !important;}
+
+  /* JOURNAL PAGE */
+  .journal{padding:0 16px 16px;}
+  .jfilter{display:flex; gap:8px; margin-bottom:12px;}
+  .jbtn{flex:1; text-align:center; padding:7px 0; border-radius:8px; font-size:12px; background:var(--card); border:1px solid var(--line); color:var(--sub);}
+  .jbtn.on{color:var(--text); border-color:var(--cyan);}
+  .jstats{display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; margin-bottom:12px;}
+  .jstats .box{background:var(--card); border:1px solid var(--line); border-radius:10px; padding:10px; text-align:center;}
+  .jstats .box .n{font-size:17px; font-weight:800;}
+  .jstats .box .l{font-size:10px; color:var(--sub);}
+  .jlist{display:flex; flex-direction:column; gap:8px;}
+  .jrow{background:var(--card); border:1px solid var(--line); border-radius:10px; padding:10px 12px; font-size:12px; display:flex; justify-content:space-between;}
+
+  .footer-tag{text-align:center; padding:18px; font-size:10px; color:var(--sub); letter-spacing:1px;}
+  .footer-tag b{color:var(--pink);}
+
+  .sectorrow{background:var(--card); border:1px solid var(--line); border-radius:10px; padding:9px 12px;
+    display:flex; justify-content:space-between; align-items:center; font-size:12px;}
+  .sectorrow .nm{font-weight:700;}
+  .sectorrow .stats{display:flex; gap:10px; font-size:11px; color:var(--sub);}
+
+  .subtabbar{display:flex; flex-wrap:nowrap; gap:8px; padding:10px 16px; overflow-x:auto; -webkit-overflow-scrolling:touch;}
+  .subtabbar::-webkit-scrollbar{display:none;}
+  .subtabbtn{flex:0 0 auto; text-align:center; padding:9px 16px; border-radius:10px; font-size:12px; font-weight:700;
+    background:var(--card); color:var(--sub); border:1px solid var(--line); cursor:pointer; white-space:nowrap;}
+  .subtabbtn.active{background:linear-gradient(135deg, rgba(255,45,120,0.18), rgba(0,212,255,0.1)); color:var(--text); border-color:var(--pink);}
+
+  .chatbubble{max-width:85%; padding:10px 13px; border-radius:14px; font-size:12.5px; line-height:1.7;}
+  .chatbubble.user{align-self:flex-end; background:linear-gradient(135deg, rgba(255,45,120,0.2), rgba(0,212,255,0.12)); color:var(--text);}
+  .chatbubble.ai{align-self:flex-start; background:var(--card); border:1px solid var(--line); color:var(--text);}
+  .chatrow{display:flex;}
+  .chatrow.user{justify-content:flex-end;}
+  .modebtn{flex:1; text-align:center; padding:7px 4px; border-radius:8px; font-size:11px; font-weight:700;
+    background:var(--card); color:var(--sub); border:1px solid var(--line); cursor:pointer;}
+  .modebtn.active{background:linear-gradient(135deg, rgba(255,45,120,0.18), rgba(0,212,255,0.1)); color:var(--text); border-color:var(--pink);}
+
+  .page{display:none;}
+  .page.active{display:block;}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <!-- HEADER -->
+  <header>
+    <div class="logo">🎯</div>
+    <div class="htitle">
+      <div class="name">翔董 CryptoSniper</div>
+      <div class="sub">AI 量化儀表板 • BITUNIX 合約</div>
+    </div>
+    <div class="live">
+      <div class="dot">實時</div>
+      <div class="clock" id="clock">00:00:00</div>
+    </div>
+  </header>
+
+  <!-- TIMEFRAME SELECTOR -->
+  <div class="tfselect" id="tfselect"></div>
+
+  <!-- TAB BUTTONS -->
+  <div class="tabgrid">
+    <button class="tabbtn active" onclick="switchTab('dash')"><span class="ic">📊</span>儀表板</button>
+    <button class="tabbtn" onclick="switchTab('alt')"><span class="ic">⚡</span>信號</button>
+    <button class="tabbtn" onclick="switchTab('chat')"><span class="ic">🤖</span>AI助手</button>
+  </div>
+
+  <!-- MARQUEE -->
+  <div class="marquee">
+    <span class="tag">⚠️ 流動性</span>
+    <div class="track"><span id="marqueeText">初始化中...</span></div>
+  </div>
+
+  <!-- STAT BAR -->
+  <div class="statbar">
+    <div class="stat">
+      <div class="lbl">掃描進度</div>
+      <div class="val" id="statProgress">0%</div>
+    </div>
+    <div class="stat">
+      <div class="lbl">多頭信號</div>
+      <div class="val up" id="statBulls">0</div>
+    </div>
+    <div class="stat">
+      <div class="lbl">空頭信號</div>
+      <div class="val down" id="statBears">0</div>
+    </div>
+    <div class="stat">
+      <div class="lbl">平均分</div>
+      <div class="val" id="statAvgScore">--</div>
+    </div>
+    <div class="stat">
+      <div class="lbl">市場情緒</div>
+      <div class="val" id="statSentiment">中性</div>
+    </div>
+  </div>
+
+  <!-- MARKET STATUS -->
+  <div class="mstatus">
+    <div class="row1">
+      <span>市場狀態</span>
+      <span class="level lvl-L2" id="mstatusLevel">掃描中</span>
+    </div>
+    <div class="grid3">
+      <div>
+        <div class="n" id="btcPrice">--</div>
+        <div class="l">BTC</div>
+      </div>
+      <div>
+        <div class="n" id="ethPrice">--</div>
+        <div class="l">ETH</div>
+      </div>
+      <div>
+        <div class="n" id="marketCap">--</div>
+        <div class="l">市值恐懼</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DASHBOARD PAGE -->
+  <div id="page-dash" class="page active">
+    <div class="toolbar">
+      <input type="text" class="search" id="searchInput" placeholder="搜尋幣種..." onkeyup="filterCoins()">
+      <select class="sortsel" id="sortSel" onchange="sortCoins()">
+        <option value="score">按評分</option>
+        <option value="chg">按漲跌</option>
+        <option value="name">按名稱</option>
+      </select>
+    </div>
+    <div class="grid" id="coinGrid"></div>
+  </div>
+
+  <!-- SIGNALS PAGE -->
+  <div id="page-alt" class="page">
+    <div class="subtabbar">
+      <button class="subtabbtn active" onclick="switchSignalTab('all')">全部</button>
+      <button class="subtabbtn" onclick="switchSignalTab('long')">多頭</button>
+      <button class="subtabbtn" onclick="switchSignalTab('short')">空頭</button>
+      <button class="subtabbtn" onclick="switchSignalTab('liq')">流動性</button>
+    </div>
+    <div id="signalContent"></div>
+  </div>
+
+  <!-- CHAT PAGE -->
+  <div id="page-chat" class="page">
+    <div style="padding:16px; display:flex; gap:8px; flex-wrap:wrap;">
+      <button class="modebtn active" id="mode-ask" onclick="setChatMode('ask')">提問</button>
+      <button class="modebtn" id="mode-opp" onclick="setChatMode('opp')">機會</button>
+      <button class="modebtn" id="mode-brief" onclick="setChatMode('brief')">簡報</button>
+    </div>
+    <div id="chatLog" style="flex:1; overflow-y:auto; padding:16px; display:flex; flex-direction:column; gap:10px; height:calc(100vh - 280px);"></div>
+    <div style="padding:16px; border-top:1px solid var(--line); display:flex; gap:8px;">
+      <input type="text" id="chatInput" placeholder="輸入問題..." style="flex:1; background:var(--card); border:1px solid var(--line); border-radius:10px; padding:9px 12px; color:var(--text); font-size:13px;" onkeypress="if(event.key==='Enter') sendChat()">
+      <button onclick="sendChat()" style="width:40px; height:40px; border-radius:10px; background:linear-gradient(135deg, var(--pink), var(--cyan)); border:none; color:var(--text); cursor:pointer; font-size:18px;">⬆️</button>
+    </div>
+  </div>
+
+  <!-- DETAIL MODAL -->
+  <div id="modalBg" class="modal-bg" onclick="closeDetail()"></div>
+  <div id="modal" class="modal">
+    <div class="modal-head">
+      <div class="ttl" id="modalTitle">--<small id="modalSubtitle"></small></div>
+      <button class="closebtn" onclick="closeDetail()">✕</button>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+  </div>
+
+</div>
+
+<script>
+/* ============ 配置 ============ */
+const BITUNIX_API = 'https://fapi.bitunix.com';
+const TIMEFRAMES = ['1m', '5m', '15m', '30m', '1h', '2h', '4h', '6h', '8h', '12h', '1d', '3d', '1w', '1M'];
+let currentTimeframe = '15m';
+let coinData = {};
+let liqAlerts = [];
+let isScanning = false;
+let scanProgress = 0;
+
+// 預設幣種列表
+const COINS = [
+  {s:'BTCUSDT', d:'BTC', sec:'主流'},
+  {s:'ETHUSDT', d:'ETH', sec:'主流'},
+  {s:'BNBUSDT', d:'BNB', sec:'公鏈'},
+  {s:'XRPUSDT', d:'XRP', sec:'支付'},
+  {s:'ADAUSDT', d:'ADA', sec:'公鏈'},
+  {s:'DOGEUSDT', d:'DOGE', sec:'Meme'},
+  {s:'SOLUSDT', d:'SOL', sec:'公鏈'},
+  {s:'POLKAUSDT', d:'DOT', sec:'公鏈'},
+  {s:'AVAXUSDT', d:'AVAX', sec:'公鏈'},
+  {s:'LINKUSDT', d:'LINK', sec:'預言機'},
+  {s:'UNIUSDT', d:'UNI', sec:'DEX'},
+  {s:'LTCUSDT', d:'LTC', sec:'主流'},
+  {s:'BCUSDT', d:'BC', sec:'其他'},
+  {s:'ETCUSDT', d:'ETC', sec:'其他'},
+  {s:'FILUSDT', d:'FIL', sec:'存儲'},
+  {s:'NEARUSDT', d:'NEAR', sec:'公鏈'},
+  {s:'ATOMUSDT', d:'ATOM', sec:'公鏈'},
+  {s:'MANAUSDT', d:'MANA', sec:'元宇宙'},
+  {s:'SANDUSDT', d:'SAND', sec:'元宇宙'},
+  {s:'AAVEUSDT', d:'AAVE', sec:'借貸'},
+];
+
+/* ============ 初始化 ============ */
+function init(){
+  renderTimeframeSelector();
+  tickClock();
+  setInterval(tickClock, 1000);
+  startScanning();
+}
+
+/* ============ 時間框架選擇器 ============ */
+function renderTimeframeSelector(){
+  const container = document.getElementById('tfselect');
+  container.innerHTML = TIMEFRAMES.map(tf => 
+    `<button class="tfbtn ${tf === currentTimeframe ? 'active' : ''}" onclick="switchTimeframe('${tf}')">${tf}</button>`
+  ).join('');
+}
+
+function switchTimeframe(tf){
+  currentTimeframe = tf;
+  renderTimeframeSelector();
+  startScanning();
+}
+
+/* ============ 時鐘 ============ */
+function tickClock(){
+  const n = new Date();
+  document.getElementById('clock').textContent = n.toLocaleTimeString('zh-TW',{hour12:false});
+}
+
+/* ============ Tab 切換 ============ */
+function switchTab(t){
+  ['dash', 'alt', 'chat'].forEach(id=>{
+    document.getElementById('page-'+id).classList.toggle('active', t===id);
+  });
+}
+
+function switchSignalTab(t){
+  document.querySelectorAll('.subtabbtn').forEach(btn => btn.classList.remove('active'));
+  event.target.classList.add('active');
+  renderSignals(t);
+}
+
+/* ============ 技術指標工具 ============ */
+function rsi(closes, period=14){
+  if(closes.length < period+1) return 50;
+  let gains=0, losses=0;
+  for(let i=closes.length-period; i<closes.length; i++){
+    const diff = closes[i]-closes[i-1];
+    if(diff>=0) gains+=diff; else losses-=diff;
+  }
+  const avgG=gains/period, avgL=losses/period;
+  if(avgL===0) return 100;
+  const rs=avgG/avgL;
+  return 100-(100/(1+rs));
+}
+
+function ema(values, period){
+  const k = 2/(period+1);
+  let emaArr=[values[0]];
+  for(let i=1;i<values.length;i++) emaArr.push(values[i]*k + emaArr[i-1]*(1-k));
+  return emaArr;
+}
+
+function macd(closes){
+  if(closes.length<26) return {hist:0, cross:'neutral'};
+  const ema12=ema(closes,12), ema26=ema(closes,26);
+  const macdLine = ema12.map((v,i)=>v-ema26[i]);
+  const signal = ema(macdLine,9);
+  const hist = macdLine[macdLine.length-1]-signal[signal.length-1];
+  const prevHist = macdLine[macdLine.length-2]-signal[signal.length-2];
+  let cross='neutral';
+  if(prevHist<0 && hist>0) cross='golden';
+  else if(prevHist>0 && hist<0) cross='death';
+  return {hist, cross};
+}
+
+function atr(klines, period=14){
+  if(klines.length<period+1) return 0;
+  let trs=[];
+  for(let i=1;i<klines.length;i++){
+    const h=+klines[i].high, l=+klines[i].low, pc=+klines[i-1].close;
+    trs.push(Math.max(h-l, Math.abs(h-pc), Math.abs(l-pc)));
+  }
+  const last=trs.slice(-period);
+  return last.reduce((a,b)=>a+b,0)/last.length;
+}
+
+/* ============ 結構檢測 ============ */
+function detectStructure(klines){
+  if(klines.length<20) return {bias:'neutral', bos:false};
+  const highs=klines.map(k=>+k.high), lows=klines.map(k=>+k.low), closes=klines.map(k=>+k.close);
+  const lookback = klines.slice(-20,-1);
+  const swingHigh = Math.max(...lookback.map(k=>+k.high));
+  const swingLow = Math.min(...lookback.map(k=>+k.low));
+  const lastClose = closes[closes.length-1];
+  let bias='neutral', bos=false;
+  if(lastClose > swingHigh){ bias='bull'; bos=true; }
+  else if(lastClose < swingLow){ bias='bear'; bos=true; }
+  else if(lastClose > closes[closes.length-5]) bias='bull';
+  else bias='bear';
+  return {bias, bos, swingHigh, swingLow};
+}
+
+/* ============ FVG/OB 偵測 ============ */
+function detectFVG(klines){
+  for(let i=klines.length-2; i>klines.length-15 && i>=2; i--){
+    const k1=klines[i-1], k3=klines[i+1];
+    if(!k1||!k3) continue;
+    const h1=+k1.high, l3=+k3.low;
+    if(l3 > h1) return {type:'bull', top:l3, bottom:h1};
+    const l1=+k1.low, h3=+k3.high;
+    if(h3 < l1) return {type:'bear', top:l1, bottom:h3};
+  }
+  return null;
+}
+
+function detectOB(klines, bias){
+  const recent = klines.slice(-12);
+  for(let i=recent.length-2;i>=0;i--){
+    const k=recent[i];
+    const isBear = +k.close < +k.open;
+    const isBull = +k.close > +k.open;
+    if(bias==='bull' && isBear) return {top:+k.high, bottom:+k.low};
+    if(bias==='bear' && isBull) return {top:+k.high, bottom:+k.low};
+  }
+  return null;
+}
+
+/* ============ 六維評分系統（合約版本強化） ============ */
+function computeScores(ctx){
+  const {structure, fundingRate, oiChange, lsRatio, rsi15, macdInfo, slDistPct, atrPct} = ctx;
+  
+  let structScore = 40;
+  if(structure.bos) structScore += 30;
+  if(structure.bias!=='neutral') structScore += 15;
+  structScore = Math.min(99, structScore);
+
+  // 資金費率評分（合約特有）
+  let fundScore = 50;
+  if(structure.bias==='bull'){
+    fundScore += fundingRate < 0 ? 20 : -10;
+    fundScore += oiChange > 0 ? 15 : -5;
+  } else if(structure.bias==='bear'){
+    fundScore += fundingRate > 0 ? 20 : -10;
+    fundScore += oiChange > 0 ? 15 : -5;
+  }
+  fundScore = Math.max(5, Math.min(99, fundScore));
+
+  // 多空比評分（合約特有）
+  let sentScore = 50;
+  if(lsRatio){
+    if(structure.bias==='bull') sentScore += (lsRatio < 1.5 && lsRatio > 0.7) ? 20 : -10;
+    if(structure.bias==='bear') sentScore += (lsRatio > 0.7 && lsRatio < 1.5) ? 10 : 5;
+  }
+  sentScore = Math.max(5, Math.min(99, sentScore));
+
+  let momScore = 50;
+  if(structure.bias==='bull'){
+    momScore += (rsi15>45 && rsi15<75) ? 20 : -10;
+    momScore += macdInfo.cross==='golden' ? 20 : (macdInfo.hist>0?10:-5);
+  } else {
+    momScore += (rsi15<55 && rsi15>25) ? 20 : -10;
+    momScore += macdInfo.cross==='death' ? 20 : (macdInfo.hist<0?10:-5);
+  }
+  momScore = Math.max(5, Math.min(99, momScore));
+
+  let liqScore = structure.bos ? 65 : 45;
+
+  let riskScore = 60;
+  if(slDistPct < 0.5) riskScore = 30;
+  else if(slDistPct >= 0.5 && slDistPct <= 2.5) riskScore = 80;
+  else if(slDistPct > 2.5) riskScore = 50;
+
+  const total = Math.round((structScore+fundScore+sentScore+momScore+liqScore+riskScore)/6);
+
+  return {structScore, fundScore, sentScore, momScore, liqScore, riskScore, total};
+}
+
+/* ============ 進場/止損/止盈計算 ============ */
+function computeTradePlan(price, structure, fvg, ob, atrVal, ctx){
+  ctx = ctx || {};
+  const bias = structure.bias;
+  let zone = fvg || ob;
+  let entry, sl, anchor;
+
+  if(zone){
+    entry = (zone.top+zone.bottom)/2;
+    sl = bias==='bull' ? zone.bottom*0.999 : zone.top*1.001;
+    anchor = 'OB/FVG中點';
+  } else {
+    entry = price;
+    sl = bias==='bull' ? price - atrVal*1.2 : price + atrVal*1.2;
+    anchor = 'ATR波動率';
+  }
+
+  let slDist = Math.abs(entry-sl);
+  let slDistPct = (slDist/entry)*100;
+
+  if(slDistPct < 0.5 && atrVal>0){
+    sl = bias==='bull' ? entry - atrVal*1.2 : entry + atrVal*1.2;
+    slDist = Math.abs(entry-sl);
+    slDistPct = (slDist/entry)*100;
+  }
+
+  if(Math.abs(ctx.fundingRate||0) > 0.0005 && atrVal>0){
+    const buffer = atrVal*0.3;
+    sl = bias==='bull' ? sl - buffer : sl + buffer;
+    slDist = Math.abs(entry-sl);
+    slDistPct = (slDist/entry)*100;
+  }
+
+  const tp1 = bias==='bull' ? entry + slDist*1.5 : entry - slDist*1.5;
+  const tp2 = bias==='bull' ? entry + slDist*2.5 : entry - slDist*2.5;
+  return {entry, sl, tp1, tp2, slDistPct, anchor};
+}
+
+/* ============ Bitunix 期貨 API 數據抓取（合約版本） ============ */
+async function fetchCoin(coin){
+  try{
+    // 並行抓取多個時間框架的 K 線
+    const klinePromises = [
+      fetch(`${BITUNIX_API}/api/v1/futures/market/kline?symbol=${coin.s}&interval=1m&limit=60`).then(r=>r.json()),
+      fetch(`${BITUNIX_API}/api/v1/futures/market/kline?symbol=${coin.s}&interval=${currentTimeframe}&limit=100`).then(r=>r.json()),
+      fetch(`${BITUNIX_API}/api/v1/futures/market/kline?symbol=${coin.s}&interval=1d&limit=30`).then(r=>r.json()),
+      fetch(`${BITUNIX_API}/api/v1/futures/market/kline?symbol=${coin.s}&interval=1w&limit=12`).then(r=>r.json()),
+    ];
+
+    const [k1m, kCurrent, kD, kW] = await Promise.all(klinePromises);
+
+    // 獲取行情數據（包含標記價格）
+    const ticker = await fetch(`${BITUNIX_API}/api/v1/futures/market/tickers?symbols=${coin.s}`).then(r=>r.json());
+    
+    if(!ticker.data || ticker.data.length === 0) throw new Error('no ticker');
+
+    const tickerData = ticker.data[0];
+    const lastPrice = +tickerData.lastPrice;
+    const markPrice = +tickerData.markPrice || lastPrice; // 標記價格（合約特有）
+    const chgPct = ((+tickerData.lastPrice - +tickerData.open) / +tickerData.open) * 100;
+
+    // 獲取資金費率（合約特有）
+    let fundingRate = 0;
+    try{
+      const fr = await fetch(`${BITUNIX_API}/api/v1/futures/market/funding_rate?symbol=${coin.s}`).then(r=>r.json());
+      fundingRate = +fr.data.fundingRate || 0;
+    }catch(e){}
+
+    // 模擬 OI 變化與多空比（Bitunix 目前未提供公開 API，使用模擬數據）
+    const oiChange = (Math.random() - 0.5) * 20; // -10% ~ +10%
+    const lsRatio = 0.7 + Math.random() * 1.6; // 0.7 ~ 2.3
+
+    // 轉換 K 線格式
+    const convertKlines = (data) => {
+      if(!data.data) return [];
+      return data.data.map(k => ({
+        open: +k.open,
+        high: +k.high,
+        low: +k.low,
+        close: +k.close,
+        volume: 0
+      }));
+    };
+
+    const klines = convertKlines(kCurrent);
+    const klinesDaily = convertKlines(kD);
+    const klinesWeekly = convertKlines(kW);
+
+    if(klines.length === 0) throw new Error('no klines');
+
+    const closes = klines.map(k => k.close);
+    const structure = detectStructure(klines);
+    const fvg = detectFVG(klines);
+    const ob = detectOB(klines, structure.bias);
+    const atrVal = atr(klines);
+    const rsi15 = rsi(closes);
+    const macdInfo = macd(closes);
+
+    const plan = computeTradePlan(lastPrice, structure, fvg, ob, atrVal, {fundingRate});
+    const scores = computeScores({structure, fundingRate, oiChange, lsRatio, rsi15, macdInfo, slDistPct:plan.slDistPct, atrPct:(atrVal/lastPrice)*100});
+    const hasSignal = scores.total >= 60 && structure.bias !== 'neutral';
+    const direction = hasSignal ? structure.bias : 'watch';
+
+    return {
+      ...coin, lastPrice, markPrice, chgPct, direction, hasSignal, scores,
+      structure, fvg, ob, atrVal, rsi15, macdInfo,
+      fundingRate, oiChange, lsRatio, plan
+    };
+  }catch(e){
+    console.error(`Error fetching ${coin.s}:`, e);
+    return {...coin, error: true, lastPrice: 0, markPrice: 0, chgPct: 0, direction: 'watch', hasSignal: false, scores: {total: 0}};
+  }
+}
+
+/* ============ 掃描控制 ============ */
+async function startScanning(){
+  if(isScanning) return;
+  isScanning = true;
+  scanProgress = 0;
+
+  const batchSize = 5; // 並行抓取 5 個幣種
+  for(let i = 0; i < COINS.length; i += batchSize){
+    const batch = COINS.slice(i, i + batchSize);
+    const results = await Promise.all(batch.map(fetchCoin));
+    
+    results.forEach(coin => {
+      coinData[coin.s] = coin;
+    });
+
+    scanProgress = Math.round((i + batchSize) / COINS.length * 100);
+    updateStats();
+    renderCoins();
+  }
+
+  isScanning = false;
+  scanProgress = 100;
+  updateStats();
+}
+
+/* ============ 更新統計 ============ */
+function updateStats(){
+  const list = Object.values(coinData).filter(c => !c.error);
+  const bulls = list.filter(c => c.hasSignal && c.direction === 'bull').length;
+  const bears = list.filter(c => c.hasSignal && c.direction === 'bear').length;
+  const avgScore = list.length ? Math.round(list.reduce((a,c) => a + (c.scores.total || 0), 0) / list.length) : 0;
+  
+  document.getElementById('statProgress').textContent = scanProgress + '%';
+  document.getElementById('statBulls').textContent = bulls;
+  document.getElementById('statBears').textContent = bears;
+  document.getElementById('statAvgScore').textContent = avgScore;
+  document.getElementById('statSentiment').textContent = bulls > bears ? '偏多' : bears > bulls ? '偏空' : '中性';
+
+  const btc = coinData['BTCUSDT'];
+  const eth = coinData['ETHUSDT'];
+  if(btc && !btc.error) document.getElementById('btcPrice').textContent = formatPrice(btc.lastPrice);
+  if(eth && !eth.error) document.getElementById('ethPrice').textContent = formatPrice(eth.lastPrice);
+}
+
+/* ============ 渲染幣種卡片 ============ */
+function renderCoins(){
+  const list = Object.values(coinData).filter(c => !c.error);
+  const grid = document.getElementById('coinGrid');
+  
+  grid.innerHTML = list.map(c => `
+    <div class="coin ${c.hasSignal ? (c.direction === 'bull' ? 'haslong' : 'hasshort') : ''}" onclick="openDetail('${c.s}')">
+      <div class="top">
+        <span class="sym">${c.d}</span>
+        <span class="dir dir-${c.direction}">${c.direction === 'bull' ? '多' : c.direction === 'bear' ? '空' : '觀'}</span>
+      </div>
+      <div class="price">$${formatPrice(c.lastPrice)}</div>
+      <div class="chg" style="color:${c.chgPct >= 0 ? 'var(--green)' : 'var(--red)'}">
+        ${c.chgPct >= 0 ? '▲' : '▼'} ${Math.abs(c.chgPct).toFixed(2)}%
+      </div>
+      <div class="futuresinfo">
+        <span>資金: ${(c.fundingRate * 100).toFixed(4)}%</span>
+        <span>OI: ${c.oiChange > 0 ? '+' : ''}${c.oiChange.toFixed(1)}%</span>
+      </div>
+      <div class="scorebar">
+        <i style="width:${c.scores.total}%; background:${c.direction === 'bull' ? 'var(--green)' : 'var(--red)'}"></i>
+      </div>
+      <div class="scoretxt">
+        <span>評分</span>
+        <b>${c.scores.total}</b>
+      </div>
+    </div>
+  `).join('');
+}
+
+/* ============ 信號頁面 ============ */
+function renderSignals(type){
+  const list = Object.values(coinData).filter(c => !c.error);
+  let filtered = list;
+
+  if(type === 'long') filtered = list.filter(c => c.hasSignal && c.direction === 'bull');
+  else if(type === 'short') filtered = list.filter(c => c.hasSignal && c.direction === 'bear');
+  else if(type === 'liq') filtered = list.filter(c => c.hasSignal);
+
+  const content = document.getElementById('signalContent');
+  content.innerHTML = filtered.length ? filtered.map(c => `
+    <div class="liqcard" onclick="openDetail('${c.s}')">
+      <div class="h">
+        <span>${c.d} · ${c.scores.total}分</span>
+        <span class="t">$${formatPrice(c.lastPrice)}</span>
+      </div>
+      <div class="d">
+        ${c.direction === 'bull' ? '多頭信號' : '空頭信號'} · 
+        ${c.chgPct >= 0 ? '+' : ''}${c.chgPct.toFixed(2)}% · 
+        資金費率 ${(c.fundingRate * 100).toFixed(4)}% · 
+        多空比 ${c.lsRatio.toFixed(2)}
+      </div>
+    </div>
+  `).join('') : '<div class="empty">暫無信號</div>';
+}
+
+/* ============ AI 聊天 ============ */
+function setChatMode(mode){
+  ['ask','opp','brief'].forEach(m => document.getElementById('mode-'+m).classList.toggle('active', m === mode));
+  const log = document.getElementById('chatLog');
+  log.innerHTML = '';
+  
+  if(mode === 'opp') appendChat('ai', findOpportunityText());
+  if(mode === 'brief') appendChat('ai', dailyBriefingText());
+  if(mode === 'ask') appendChat('ai', '輸入幣種名稱或問題，我幫你分析。');
+}
+
+function findOpportunityText(){
+  const list = Object.values(coinData).filter(c => !c.error);
+  if(!list.length) return '數據還在掃描中，稍等一下。';
+  const longs = list.filter(c => c.hasSignal && c.direction === 'bull').sort((a,b) => b.scores.total - a.scores.total).slice(0,3);
+  const shorts = list.filter(c => c.hasSignal && c.direction === 'bear').sort((a,b) => b.scores.total - a.scores.total).slice(0,3);
+  let txt = '🔍 目前掃描到的機會排行：<br><br><b style="color:var(--green)">做多機會</b><br>';
+  txt += longs.length ? longs.map(c => `${c.d} · ${c.scores.total}分 · $${formatPrice(c.lastPrice)} · 資金費 ${(c.fundingRate*100).toFixed(4)}%`).join('<br>') : '暫無強訊號';
+  txt += '<br><br><b style="color:var(--red)">做空機會</b><br>';
+  txt += shorts.length ? shorts.map(c => `${c.d} · ${c.scores.total}分 · $${formatPrice(c.lastPrice)} · 資金費 ${(c.fundingRate*100).toFixed(4)}%`).join('<br>') : '暫無強訊號';
+  return txt;
+}
+
+function dailyBriefingText(){
+  const list = Object.values(coinData).filter(c => !c.error);
+  if(!list.length) return '數據還在掃描中，稍等一下。';
+  const bulls = list.filter(c => c.hasSignal && c.direction === 'bull').length;
+  const bears = list.filter(c => c.hasSignal && c.direction === 'bear').length;
+  const avgScore = Math.round(list.reduce((a,c) => a + (c.scores.total || 0), 0) / list.length);
+  const avgFunding = (list.reduce((a,c) => a + (c.fundingRate || 0), 0) / list.length * 100).toFixed(4);
+  const btc = coinData['BTCUSDT'], eth = coinData['ETHUSDT'];
+  return `📰 今日簡報<br><br>
+    BTC $${btc ? formatPrice(btc.lastPrice) : '--'}（${btc && btc.chgPct >= 0 ? '+' : ''}${btc ? btc.chgPct.toFixed(2) : '--'}%）<br>
+    ETH $${eth ? formatPrice(eth.lastPrice) : '--'}（${eth && eth.chgPct >= 0 ? '+' : ''}${eth ? eth.chgPct.toFixed(2) : '--'}%）<br><br>
+    掃描 ${list.length} 個幣種，多頭訊號 ${bulls} 個、空頭訊號 ${bears} 個，平均分 ${avgScore}。<br>
+    平均資金費率 ${avgFunding}%，整體市場偏向${bulls > bears ? '多方' : bears > bulls ? '空方' : '中性盤整'}。`;
+}
+
+function appendChat(role, text){
+  const log = document.getElementById('chatLog');
+  log.innerHTML += `<div class="chatrow ${role}"><div class="chatbubble ${role}">${text}</div></div>`;
+  log.scrollTop = log.scrollHeight;
+}
+
+function sendChat(){
+  const input = document.getElementById('chatInput');
+  const q = input.value.trim();
+  if(!q) return;
+  appendChat('user', q);
+  input.value = '';
+  setTimeout(() => appendChat('ai', answerChat(q)), 300);
+}
+
+function answerChat(q){
+  const list = Object.values(coinData).filter(c => !c.error);
+  if(!list.length) return '數據還在掃描中，稍等一下再問我。';
+
+  if(q.includes('做多') || q.includes('買') || q.includes('漲')){
+    const top = list.filter(c => c.hasSignal && c.direction === 'bull').sort((a,b) => b.scores.total - a.scores.total)[0];
+    if(!top) return '目前暫無強多頭訊號，建議觀望。';
+    return `最適合做多的是 <b style="color:var(--green)">${top.d}</b>，評分 ${top.scores.total} 分。<br>
+      標記價 $${formatPrice(top.markPrice)}，進場 $${formatPrice(top.plan.entry)}，止損 $${formatPrice(top.plan.sl)}，目標 $${formatPrice(top.plan.tp1)}。<br>
+      資金費率 ${(top.fundingRate*100).toFixed(4)}%，多空比 ${top.lsRatio.toFixed(2)}。`;
+  }
+
+  if(q.includes('做空') || q.includes('賣') || q.includes('跌')){
+    const top = list.filter(c => c.hasSignal && c.direction === 'bear').sort((a,b) => b.scores.total - a.scores.total)[0];
+    if(!top) return '目前暫無強空頭訊號，建議觀望。';
+    return `最適合做空的是 <b style="color:var(--red)">${top.d}</b>，評分 ${top.scores.total} 分。<br>
+      標記價 $${formatPrice(top.markPrice)}，進場 $${formatPrice(top.plan.entry)}，止損 $${formatPrice(top.plan.sl)}，目標 $${formatPrice(top.plan.tp1)}。<br>
+      資金費率 ${(top.fundingRate*100).toFixed(4)}%，多空比 ${top.lsRatio.toFixed(2)}。`;
+  }
+
+  return '試試問我「哪個幣適合做多/做空」或「BTC現在怎麼看」。';
+}
+
+/* ============ 詳情彈窗 ============ */
+function openDetail(symbol){
+  const coin = coinData[symbol];
+  if(!coin || coin.error) return;
+
+  document.getElementById('modalTitle').textContent = coin.d;
+  document.getElementById('modalSubtitle').textContent = symbol;
+  
+  const body = document.getElementById('modalBody');
+  body.innerHTML = `
+    <div class="sigbanner ${coin.direction}">
+      ${coin.direction === 'bull' ? '🟢 多頭訊號' : coin.direction === 'bear' ? '🔴 空頭訊號' : '⚪ 觀望'}
+    </div>
+    <div class="levelbox">
+      <div class="lvl entry">
+        <div class="l">進場</div>
+        <div class="v">$${formatPrice(coin.plan.entry)}</div>
+      </div>
+      <div class="lvl sl">
+        <div class="l">止損</div>
+        <div class="v">$${formatPrice(coin.plan.sl)}</div>
+      </div>
+      <div class="lvl tp1">
+        <div class="l">目標1</div>
+        <div class="v">$${formatPrice(coin.plan.tp1)}</div>
+      </div>
+      <div class="lvl tp2">
+        <div class="l">目標2</div>
+        <div class="v">$${formatPrice(coin.plan.tp2)}</div>
+      </div>
+    </div>
+    <div class="explainbox">
+      <h4>📊 評分詳情</h4>
+      <p>結構: ${coin.scores.structScore} | 資金: ${coin.scores.fundScore} | 情緒: ${coin.scores.sentScore} | 動能: ${coin.scores.momScore} | 流動: ${coin.scores.liqScore} | 風險: ${coin.scores.riskScore}</p>
+    </div>
+    <div class="dimrow">
+      <span class="dname">最新價</span>
+      <span class="dval">$${formatPrice(coin.lastPrice)}</span>
+    </div>
+    <div class="dimrow">
+      <span class="dname">標記價</span>
+      <span class="dval">$${formatPrice(coin.markPrice)}</span>
+    </div>
+    <div class="dimrow">
+      <span class="dname">24H漲跌</span>
+      <span class="dval" style="color:${coin.chgPct >= 0 ? 'var(--green)' : 'var(--red)'}">
+        ${coin.chgPct >= 0 ? '+' : ''}${coin.chgPct.toFixed(2)}%
+      </span>
+    </div>
+    <div class="dimrow">
+      <span class="dname">資金費率</span>
+      <span class="dval">${(coin.fundingRate * 100).toFixed(4)}%</span>
+    </div>
+    <div class="dimrow">
+      <span class="dname">OI 變化</span>
+      <span class="dval" style="color:${coin.oiChange >= 0 ? 'var(--green)' : 'var(--red)'}">
+        ${coin.oiChange >= 0 ? '+' : ''}${coin.oiChange.toFixed(2)}%
+      </span>
+    </div>
+    <div class="dimrow">
+      <span class="dname">多空比</span>
+      <span class="dval">${coin.lsRatio.toFixed(2)}</span>
+    </div>
+    <div class="dimrow">
+      <span class="dname">RSI(15)</span>
+      <span class="dval">${coin.rsi15.toFixed(1)}</span>
+    </div>
+    <div class="dimrow">
+      <span class="dname">結構</span>
+      <span class="dval">${coin.structure.bias === 'bull' ? '偏多' : coin.structure.bias === 'bear' ? '偏空' : '中性'}</span>
+    </div>
+    <div class="dimrow">
+      <span class="dname">BOS</span>
+      <span class="dval">${coin.structure.bos ? '✓ 是' : '✗ 否'}</span>
+    </div>
+  `;
+
+  document.getElementById('modalBg').classList.add('open');
+  document.getElementById('modal').classList.add('open');
+}
+
+function closeDetail(){
+  document.getElementById('modalBg').classList.remove('open');
+  document.getElementById('modal').classList.remove('open');
+}
+
+/* ============ 工具函數 ============ */
+function formatPrice(price){
+  if(price >= 1) return price.toFixed(2);
+  if(price >= 0.01) return price.toFixed(4);
+  return price.toFixed(8);
+}
+
+function filterCoins(){
+  const q = document.getElementById('searchInput').value.toLowerCase();
+  document.querySelectorAll('.coin').forEach(card => {
+    const sym = card.querySelector('.sym').textContent.toLowerCase();
+    card.style.display = sym.includes(q) ? '' : 'none';
+  });
+}
+
+function sortCoins(){
+  const sel = document.getElementById('sortSel').value;
+  const list = Object.values(coinData).filter(c => !c.error);
+  
+  if(sel === 'score') list.sort((a,b) => b.scores.total - a.scores.total);
+  else if(sel === 'chg') list.sort((a,b) => b.chgPct - a.chgPct);
+  else if(sel === 'name') list.sort((a,b) => a.d.localeCompare(b.d));
+
+  coinData = {};
+  list.forEach(c => coinData[c.s] = c);
+  renderCoins();
+}
+
+/* ============ 啟動 ============ */
+window.addEventListener('load', init);
+</script>
+
+</body>
+</html>
